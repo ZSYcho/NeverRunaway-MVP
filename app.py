@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import sqlite3
+import os
 from datetime import datetime
 from flask_cors import CORS
 
-app = Flask(__name__)
+# Configure Flask to serve the "frontend" directory correctly
+app = Flask(__name__, static_folder='frontend', static_url_path='')
 CORS(app) # 允许跨域 in front-end
 DATABASE = "dapp.db"
 
@@ -38,6 +40,14 @@ def init_db():
     ''')
     conn.commit()
     conn.close()
+
+# 全局初始化，确保生产环境 WSGI 启动时执行
+init_db()
+
+# 0. 返回静态首页展示层
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
 
 # 1. 商家注册
 @app.route('/api/merchant/register', methods=['POST'])
@@ -117,5 +127,4 @@ def verify_code():
     return jsonify({"code": 0, "data": dict(record)})
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
