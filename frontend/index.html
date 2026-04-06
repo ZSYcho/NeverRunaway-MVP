@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeverRunaway - 去中心化餐饮储值</title>
+    <!-- Tailwind & Google Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Ethers, Axios, SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #09090b 0%, #18181b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+        h1, h2, h3, .logo-text { font-family: 'Outfit', sans-serif; }
+        .glass { 
+            background: rgba(30, 41, 59, 0.4); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+        .glass-card {
+            background: linear-gradient(180deg, rgba(30,41,59,0.5) 0%, rgba(15,23,42,0.6) 100%);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            border-radius: 1.5rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .glass-card:hover { border-color: rgba(99, 102, 241, 0.4); transform: translateY(-3px); }
+        .gradient-text { background: linear-gradient(90deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .primary-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white; border-radius: 0.75rem; font-weight: 600; padding: 0.75rem 1.5rem;
+            transition: all 0.2s; box-shadow: 0 4px 15px -3px rgba(99, 102, 241, 0.4);
+        }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -3px rgba(99, 102, 241, 0.6); }
+        .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .secondary-btn {
+            background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; border-radius: 0.75rem; font-weight: 500; padding: 0.75rem 1.5rem;
+            transition: all 0.2s;
+        }
+        .secondary-btn:hover { background: rgba(51, 65, 85, 0.9); }
+        .dark-input {
+            background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; border-radius: 0.75rem; padding: 0.75rem 1rem; width: 100%; focus:outline-none;
+            transition: all 0.2s;
+        }
+        .dark-input:focus { border-color: #818cf8; outline: none; box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2); }
+        
+        /* SweetAlert Dark Theme Override */
+        .swal2-popup { background: #1e293b !important; color: #f8fafc !important; border-radius: 1.5rem !important; border: 1px solid rgba(255,255,255,0.1) !important;}
+        .swal2-title { color: #f8fafc !important; font-family: 'Outfit', sans-serif !important; }
+        .swal2-html-container { color: #cbd5e1 !important; font-family: 'Inter', sans-serif !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-50 py-4 px-6 md:px-12 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-xl logo-text shadow-lg">NR</div>
+            <span class="text-xl font-bold tracking-wide logo-text hidden sm:block">NeverRunaway</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <button id="walletBtn" class="primary-btn text-sm px-4 py-2" onclick="connectWallet()">
+                <span id="walletAddressText">连接钱包</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto p-4 md:p-8 mt-4">
+        <!-- View Toggle View -->
+        <div class="flex justify-center mb-10">
+            <div class="glass p-1 rounded-2xl inline-flex relative shadow-xl">
+                <button id="tabUser" class="relative z-10 px-8 py-3 rounded-xl font-medium transition-all text-sm md:text-base text-white bg-indigo-500/20 text-indigo-300" onclick="switchTab('user')">我是消费者</button>
+                <button id="tabMerchant" class="relative z-10 px-8 py-3 rounded-xl font-medium transition-all text-sm md:text-base text-slate-400 hover:text-white" onclick="switchTab('merchant')">我是商家</button>
+                <!-- Animate background slide logic is basic in plain JS, skipping for pure css approach via js toggling class-->
+            </div>
+        </div>
+
+        <!-- ================= USER VIEW ================= -->
+        <div id="viewUser" class="space-y-12 animate-fade-in block">
+            
+            <div class="text-center space-y-4 mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold">资金由 <span class="gradient-text">智能合约</span> 守护</h1>
+                <p class="text-slate-400 max-w-2xl mx-auto text-lg">不可篡改的链上契约，商户跑路，一键退款。即日起，你终于可以安心享受储值优惠。</p>
+            </div>
+
+            <!-- Store Catalog -->
+            <div>
+                <h2 class="text-2xl font-semibold mb-6 flex items-center gap-2"><div class="w-2 h-6 bg-indigo-500 rounded-full"></div> 发现门店</h2>
+                <div id="storeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Stores rendered here -->
+                    <div class="text-slate-500 py-10 w-full text-center col-span-full">正在加载门店列表...</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= MERCHANT VIEW ================= -->
+        <div id="viewMerchant" class="hidden space-y-8 animate-fade-in">
+            
+            <div class="text-center space-y-4 mb-10">
+                <h1 class="text-3xl md:text-4xl font-bold">发行你的 <span class="gradient-text">刚性兑付合约</span></h1>
+                <p class="text-slate-400 max-w-xl mx-auto text-base">告别信任黑盒。为顾客提供最具安全感的储值机制，沉淀更多高质量会员。</p>
+            </div>
+
+            <!-- Merchant Setup / Dashboard placeholder -->
+            <div id="merchantContent" class="max-w-4xl mx-auto">
+                <div class="text-center text-slate-500 py-20 glass-card">请先连接钱包验证商户身份...</div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        const API_BASE = "http://localhost:5000/api";
+        const FACTORY_ADDRESS = "0xa352d9Ba2628B149e415bF4ca87Daa8514374617";
+        const USDC_ADDRESS = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+        
+        let provider, signer, userAddress;
+        let currentTab = 'user';
+        let merchantList = [];
+
+        // ABIs (minimalistic standard for MVP)
+        const USDC_ABI = ["function approve(address spender, uint256 amount) public returns (bool)", "function balanceOf(address owner) view returns (uint256)"];
+        const FACTORY_ABI = [
+            "function createStoreContract(uint256 _expireDays, uint256[] calldata _depositAmounts, uint256[] calldata _creditAmounts) external returns (address)",
+            "function getMerchantContracts(address _merchant) external view returns (address[] memory)"
+        ];
+        const STORE_ABI = [
+            "function userDeposit(uint256 _depositAmount) external",
+            "function userConsume(address _user, uint256 _consumeAmount) external",
+            "function merchantWithdraw() external",
+            "function userRefund() external",
+            "function getUserCredit(address _user) external view returns (uint256)",
+            "function merchantWithdrawable() view returns (uint256)",
+            "function totalLocked() view returns (uint256)",
+            "function storeName() view returns (string)", // Not in contract, but informative
+            "function expireTime() view returns (uint256)",
+            "function depositTier(uint256) view returns (uint256)",
+            "function merchant() view returns (address)"
+        ];
+
+        // Utils
+        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
+        function showLoading(msg) { Swal.fire({ title: msg, allowOutsideClick: false, didOpen: () => { Swal.showLoading() } }); }
+        function hideLoading() { Swal.close(); }
+        function formatAddr(addr) { return addr.substring(0,6) + "..." + addr.substring(addr.length-4); }
+
+        // ================= TAB LOGIC =================
+        function switchTab(tab) {
+            currentTab = tab;
+            const btnUser = document.getElementById('tabUser');
+            const btnMerchant = document.getElementById('tabMerchant');
+            const viewUser = document.getElementById('viewUser');
+            const viewMerchant = document.getElementById('viewMerchant');
+
+            if (tab === 'user') {
+                btnUser.className = "relative z-10 px-8 py-3 rounded-xl font-medium transition-all text-sm md:text-base text-white bg-indigo-500/20 text-indigo-300";
+                btnMerchant.className = "relative z-10 px-8 py-3 rounded-xl font-medium transition-all text-sm md:text-base text-slate-400 hover:text-white";
+                viewUser.classList.remove('hidden'); viewMerchant.classList.add('hidden');
+                loadStoreList();
+            } else {
+                btnMerchant.className = "relative z-10 px-8 py-3 rounded-xl font-medium transition-all text-sm md:text-base text-white bg-indigo-500/20 text-indigo-300";
+                btnUser.className = "relative z-10 px-8 py-3 rounded-xl font-medium transition-all text-sm md:text-base text-slate-400 hover:text-white";
+                viewMerchant.classList.remove('hidden'); viewUser.classList.add('hidden');
+                initMerchantView();
+            }
+        }
+
+        // ================= WALLET LOGIC =================
+        async function connectWallet() {
+            if (!window.ethereum) { Swal.fire('缺少环境', '请在浏览器安装并启用 MetaMask 钱包插件！', 'warning'); return; }
+            try {
+                showLoading('请求连接钱包...');
+                provider = new ethers.BrowserProvider(window.ethereum);
+                const network = await provider.getNetwork();
+                // Sepolia ChainID = 11155111
+                if(network.chainId !== 11155111n) {
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0xaa36a7' }], // Sepolia Hex
+                        });
+                        provider = new ethers.BrowserProvider(window.ethereum); // Re-init after switch
+                    } catch (switchError) {
+                        hideLoading();
+                        Swal.fire('网络错误', '无法自动切换网络，请点开 MetaMask 手动切换至 Sepolia 测试网（可能需要在钱包设置内开启"显示测试网"）', 'error');
+                        return;
+                    }
+                }
+                const accounts = await provider.send("eth_requestAccounts", []);
+                signer = await provider.getSigner();
+                userAddress = await signer.getAddress();
+                
+                document.getElementById('walletAddressText').innerText = formatAddr(userAddress);
+                document.getElementById('walletBtn').classList.add('from-emerald-500', 'to-teal-500');
+                
+                hideLoading();
+                Toast.fire({ icon: 'success', title: '钱包连接成功' });
+                
+                if (currentTab === 'user') loadStoreList();
+                else initMerchantView();
+                
+            } catch (error) {
+                hideLoading();
+                console.error(error);
+                Toast.fire({ icon: 'error', title: '连接被拒绝或出错' });
+            }
+        }
+
+        // ================= USER FLOW =================
+        async function loadStoreList() {
+            try {
+                const res = await axios.get(`${API_BASE}/merchant/list`);
+                merchantList = res.data.data;
+                const grid = document.getElementById('storeGrid');
+                if(merchantList.length === 0) {
+                    grid.innerHTML = `<div class="text-slate-500 py-10 w-full text-center col-span-full">暂无已经上线的智能合约门店</div>`;
+                    return;
+                }
+                
+                let html = '';
+                for (let store of merchantList) {
+                    let userCreditHTML = '';
+                    // If connected, fetch user credit
+                    if(signer && store.contract_address) {
+                        try {
+                           const contract = new ethers.Contract(store.contract_address, STORE_ABI, provider);
+                           const creditInfo = await contract.getUserCredit(userAddress);
+                           const expireInfo = await contract.expireTime();
+                           const credit = ethers.formatUnits(creditInfo, 6);
+                           
+                           if(Number(credit) > 0) {
+                               userCreditHTML = `
+                               <div class="mt-4 p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-lg">
+                                    <div class="flex justify-between text-sm mb-2">
+                                        <span class="text-indigo-300">我的可用积分</span>
+                                        <span class="font-bold text-white">${credit} USDC</span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button onclick="reqConsumeCode('${store.wallet_address}', ${credit})" class="flex-1 primary-btn py-1.5 text-xs">出示核销码</button>
+                                        <button onclick="doRefund('${store.contract_address}')" class="secondary-btn py-1.5 text-xs px-3">退款</button>
+                                    </div>
+                               </div>`;
+                           }
+                        } catch(e) { console.error("读取合约状态失败", e); }
+                    }
+
+                    html += `
+                        <div class="glass-card p-6 flex flex-col h-full relative overflow-hidden group">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-1 group-hover:text-indigo-400 transition-colors">${store.store_name}</h3>
+                            <p class="text-sm text-slate-400 mb-6 flex-1 break-all">${store.store_address}</p>
+                            
+                            <div class="space-y-3 mt-auto">
+                                <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700/50">
+                                   <div class="flex justify-between text-sm"><span>储值 10 USDC</span> <span class="text-green-400 font-bold">得 12 USDC 积分</span></div>
+                                </div>
+                                <button onclick="doDeposit('${store.contract_address}', 10)" class="w-full secondary-btn">一键安全储值</button>
+                                ${userCreditHTML}
+                            </div>
+                        </div>
+                    `;
+                }
+                grid.innerHTML = html;
+            } catch (error) {
+                console.error("加载列表失败", error);
+            }
+        }
+
+        async function doDeposit(contractAddress, amountUSD) {
+            if (!signer) return Toast.fire({ icon: 'warning', title: '请先连接钱包' });
+            try {
+                showLoading(`正在授权 ${amountUSD} USDC...`);
+                const amount = ethers.parseUnits(amountUSD.toString(), 6); // USDC has 6 decimals
+                
+                const usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, signer);
+                const storeContract = new ethers.Contract(contractAddress, STORE_ABI, signer);
+                
+                const tx1 = await usdcContract.approve(contractAddress, amount);
+                await tx1.wait();
+                
+                showLoading('正在上链交互，确认储值资金...');
+                const tx2 = await storeContract.userDeposit(amount);
+                await tx2.wait();
+                
+                Swal.fire('储值成功！', '您的资产已锚定在独立合约中，商户无法私人提取未核销的余额。', 'success');
+                loadStoreList(); // Refresh
+            } catch (err) {
+                hideLoading();
+                console.error(err);
+                Swal.fire('储值失败', err.message.slice(0, 50), 'error');
+            }
+        }
+
+        async function doRefund(contractAddress) {
+            try {
+                showLoading('正在申请由于到期或者商户违约触发的退款...');
+                const storeContract = new ethers.Contract(contractAddress, STORE_ABI, signer);
+                const tx = await storeContract.userRefund();
+                await tx.wait();
+                Swal.fire('退款成功！', '您的未使用金额已原路退回钱包。', 'success');
+                loadStoreList();
+            } catch(err) {
+                hideLoading();
+                Swal.fire('退款失败', '可能合约尚未到期，或者您没有余额。' + err.reason, 'error');
+            }
+        }
+
+        async function reqConsumeCode(merchantWallet, maxAmount) {
+            const { value: amount } = await Swal.fire({
+                title: '请输入核销金额',
+                input: 'number',
+                inputPlaceholder: `最多 ${maxAmount}`,
+                background: '#1e293b',
+                color: '#f8fafc',
+                showCancelButton: true
+            });
+            if (!amount || amount <= 0 || amount > maxAmount) return;
+            
+            try {
+                showLoading('生成一次性核销码...');
+                // 放大额度倍数给后端，由于USDC
+                const num = parseFloat(amount.toString());
+                const res = await axios.post(`${API_BASE}/consume/generate`, {
+                    user_wallet: userAddress,
+                    merchant_wallet: merchantWallet,
+                    consume_amount: num * 1000000 // Convert to standard atomic integer for DB storage matching decimals
+                });
+                if(res.data.code === 0) {
+                    hideLoading();
+                    Swal.fire({
+                        title: '请向收银员出示',
+                        html: `<div class="text-5xl font-mono tracking-widest text-indigo-400 font-bold my-4">${res.data.verify_code}</div><p class="text-sm">此码有效且未消费，金额: ${amount} USDC</p>`,
+                        icon: 'info'
+                    });
+                } else {
+                    Swal.fire('错误', res.data.msg, 'error');
+                }
+            } catch(e) { hideLoading(); console.log(e); }
+        }
+
+        // ================= MERCHANT FLOW =================
+        async function initMerchantView() {
+            if (!signer) return;
+            const res = await axios.get(`${API_BASE}/merchant/list`);
+            const allMerchants = res.data.data;
+            const myMerchant = allMerchants.find(m => m.wallet_address.toLowerCase() === userAddress.toLowerCase());
+            
+            const content = document.getElementById('merchantContent');
+            
+            if(!myMerchant) {
+                // Not bound / not deployed
+                content.innerHTML = `
+                <div class="glass-card p-8 space-y-6">
+                    <h2 class="text-2xl font-bold">1. 入驻信息登记</h2>
+                    <input id="regName" type="text" class="dark-input" placeholder="门店名称 (如: 张三炸酱面)">
+                    <input id="regAddr" type="text" class="dark-input" placeholder="地理位置">
+                    <input id="regLic" type="text" class="dark-input" placeholder="营业执照工商号">
+                    <button onclick="registerAsMerchant()" class="w-full primary-btn">提交审核资料并生成合约</button>
+                </div>
+                `;
+            } else {
+                // Has store deployed
+                try {
+                    const contract = new ethers.Contract(myMerchant.contract_address, STORE_ABI, provider);
+                    const withdrawableInfo = await contract.merchantWithdrawable();
+                    const lockedInfo = await contract.totalLocked();
+                    const wNum = ethers.formatUnits(withdrawableInfo, 6);
+                    const lNum = ethers.formatUnits(lockedInfo, 6);
+
+                    content.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- Console -->
+                        <div class="glass-card p-6 space-y-4 shadow-indigo-900/10">
+                            <h2 class="text-xl font-bold text-indigo-300">资产控制台</h2>
+                            <div class="p-4 bg-slate-900/50 rounded-xl">
+                                <div class="text-sm text-slate-400">已核销可提现金额 (USDC)</div>
+                                <div class="text-3xl font-mono font-bold mt-1 text-green-400">${wNum}</div>
+                                <button onclick="merchantWithdraw('${myMerchant.contract_address}')" class="mt-4 primary-btn w-full text-sm">一键提币到钱包</button>
+                            </div>
+                            <div class="p-4 bg-slate-900/50 rounded-xl">
+                                <div class="text-sm text-slate-400">总留存锁定金 (不得挪用) (USDC)</div>
+                                <div class="text-2xl font-mono font-bold mt-1">${lNum}</div>
+                            </div>
+                            <div class="text-xs text-slate-500 break-all">合约: ${myMerchant.contract_address}</div>
+                        </div>
+
+                        <!-- Cashier -->
+                        <div class="glass-card p-6 space-y-6">
+                            <h2 class="text-xl font-bold text-purple-400">核销收银台</h2>
+                            <p class="text-sm text-slate-400">顾客出示 6 位数字码，验证并签名后资金转化入账。</p>
+                            <input id="cashierCode" type="text" class="dark-input text-center text-3xl font-mono tracking-widest py-4" placeholder="------" maxlength="6">
+                            <button onclick="verifyAndConsume('${myMerchant.contract_address}')" class="w-full primary-btn from-purple-600 to-pink-600 shadow-purple-500/40">发起链上划转扣证</button>
+                        </div>
+                    </div>
+                    `;
+                } catch(e) {
+                     content.innerHTML = `<div class="glass-card p-8 pb-12"><h2 class="text-red-400 text-xl">读取链上资产失败：请确保您的网络在Sepolia。</h2></div>`;
+                }
+            }
+        }
+
+        async function registerAsMerchant() {
+            const store_name = document.getElementById('regName').value;
+            const store_address = document.getElementById('regAddr').value;
+            const license_no = document.getElementById('regLic').value;
+            if(!store_name || !store_address) return Swal.fire('缺少信息', '请填写完整', 'info');
+
+            try {
+                showLoading('正在录入资质信息...');
+                await axios.post(`${API_BASE}/merchant/register`, {
+                    wallet_address: userAddress, store_name, store_address, license_no
+                });
+                
+                showLoading('请在钱包确认部署【门店储值合约】...');
+                const factoryContract = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
+                
+                // Demo settings: expire in 365 days. Tier: deposit 10u get 12u credit.
+                const depositArr = [ethers.parseUnits("10", 6)];
+                const creditArr = [ethers.parseUnits("12", 6)];
+                
+                const tx = await factoryContract.createStoreContract(365, depositArr, creditArr);
+                await tx.wait(); // wait for block to process the event
+                
+                // In a production app, we would parse TX events to get the created address.
+                // Here we fetch it via view function for reliability on testnet.
+                const stores = await factoryContract.getMerchantContracts(userAddress);
+                const storeAddr = stores[stores.length - 1]; // Latest created
+
+                showLoading('链上构建成功，正在同步云端...');
+                await axios.post(`${API_BASE}/merchant/bind-contract`, {
+                    contract_address: storeAddr, wallet_address: userAddress
+                });
+
+                Swal.fire('入驻大吉', '专属于你的智能合约发卡行已建立！', 'success');
+                initMerchantView(); // Reload page
+            } catch(e) {
+                hideLoading();
+                console.error(e);
+                Swal.fire('失败', e.message, 'error');
+            }
+        }
+
+        async function verifyAndConsume(contractAddress) {
+            const code = document.getElementById('cashierCode').value;
+            if(!code || code.length !== 6) return Toast.fire({icon:'warning', title:'请输入6位核销码'});
+
+            try {
+                showLoading('后端安全查验核销码...');
+                const res = await axios.post(`${API_BASE}/consume/verify`, {
+                    verify_code: code,
+                    merchant_wallet: userAddress
+                });
+
+                if(res.data.code !== 0) {
+                    Swal.fire('查无此码', res.data.msg, 'error');
+                    return;
+                }
+
+                const consumeAmountRaw = res.data.data.consume_amount;
+                const userWallet = res.data.data.user_wallet;
+
+                showLoading(`核销成功！请唤起钱包发起资金过帐 (${consumeAmountRaw/1000000} USDC)`);
+                const storeContract = new ethers.Contract(contractAddress, STORE_ABI, signer);
+                
+                const tx = await storeContract.userConsume(userWallet, consumeAmountRaw);
+                await tx.wait();
+
+                Swal.fire('资金落袋为安', '成功划拨资金到可提现池！', 'success');
+                document.getElementById('cashierCode').value = '';
+                initMerchantView();
+            } catch(e) {
+                hideLoading();
+                console.error(e);
+                Swal.fire('链上失败', '扣证失败: ' + e.reason, 'error');
+            }
+        }
+
+        async function merchantWithdraw(contractAddress) {
+            try {
+                showLoading('正在向您的钱包打款...');
+                const storeContract = new ethers.Contract(contractAddress, STORE_ABI, signer);
+                const tx = await storeContract.merchantWithdraw();
+                await tx.wait();
+                Swal.fire('提款成功！', 'USDC 已经回到您的金库。', 'success');
+                initMerchantView();
+            } catch(e) {
+                hideLoading();
+                Swal.fire('提额失败', e.reason || e.message, 'error');
+            }
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {});
+    </script>
+</body>
+</html>
