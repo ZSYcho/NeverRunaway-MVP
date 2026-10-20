@@ -2,8 +2,16 @@ packages:
   - apps/*
   - packages/*
 
-# Supply-chain guard: skip versions published in the last 24h.
+# Supply-chain guards: skip versions published in the last 24h, and only let
+# explicitly approved packages run install scripts.
 minimumReleaseAge: 1440
+allowBuilds:
+  esbuild: true
+
+# @wagmi/cli pins esbuild ~0.25 while Vite 8 wants ^0.27 || ^0.28 as an optional peer;
+# one current esbuild serves both (`pnpm gen` exercises the wagmi side in CI).
+overrides:
+  esbuild: ^0.28.2
 
 # One version per shared dependency across the workspace; packages reference it as "catalog:".
 catalog:

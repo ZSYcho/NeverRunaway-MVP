@@ -7,10 +7,12 @@
     "node": ">=24"
   },
   "scripts": {
+    "gen": "pnpm --filter @neverrunaway/shared gen",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "test:contracts": "forge test --root contracts",
+    "lint": "oxlint",
     "format": "bash scripts/format.sh --write",
     "format:check": "bash scripts/format.sh --check"
   },
