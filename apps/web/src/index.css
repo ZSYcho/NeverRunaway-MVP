@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    'Inter Variable', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
+  --font-display:
+    'Outfit Variable', 'PingFang SC', 'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #09090b 0%, #18181b 100%) fixed;
+    @apply font-sans text-slate-50 antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@utility glass {
+  background: rgb(30 41 59 / 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+@utility glass-card {
+  background: linear-gradient(180deg, rgb(30 41 59 / 0.5) 0%, rgb(15 23 42 / 0.6) 100%);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.5);
+}
+
+@utility gradient-text {
+  background: linear-gradient(90deg, #818cf8, #c084fc);
+  background-clip: text;
+  color: transparent;
+}
