@@ -83,9 +83,22 @@ send real funds to them.
    forge script script/DeployStaging.s.sol --rpc-url https://testrpc.xlayer.tech/terigon \
      --account nr-deployer --broadcast
    ```
-   Broadcasting writes `packages/shared/src/deployments/1952.json`. Register it in
-   `packages/shared/src/deployments.ts` and commit both.
+   Broadcasting writes `packages/shared/src/deployments/1952.json` and the transaction record
+   `contracts/broadcast/DeployStaging.s.sol/1952/run-latest.json`. Register the deployment file in
+   `packages/shared/src/deployments.ts` and commit all three.
 4. Point the web app at it: `VITE_CHAIN_ID=1952 pnpm --filter @neverrunaway/web dev`.
+
+## Deployments
+
+### X Layer testnet (chain ID 1952)
+
+| Contract                          | Address                                                                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `StoreDepositFactory`             | [`0x57C16A1Dcc467d475CE25AFBcD76172EF592611f`](https://web3.okx.com/explorer/x-layer-testnet/address/0x57C16A1Dcc467d475CE25AFBcD76172EF592611f) |
+| Test USDC (`MockUSDC`, open mint) | [`0x83EF7d930c5730Fe01fF485828AF7ADF8e1c1DcB`](https://web3.okx.com/explorer/x-layer-testnet/address/0x83EF7d930c5730Fe01fF485828AF7ADF8e1c1DcB) |
+
+Deployed in block 44027029 with `DeployStaging.s.sol`. The deployer account holds no privileges:
+neither contract has an owner. Source verification on the explorer is still pending.
 
 ## Dependency policy
 

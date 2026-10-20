@@ -1,5 +1,6 @@
 import { getAddress, isAddress } from 'viem'
 import { z } from 'zod'
+import xLayerTestnetDeployment from './deployments/1952.json' with { type: 'json' }
 import anvilDeployment from './deployments/31337.json' with { type: 'json' }
 
 const address = z
@@ -25,7 +26,7 @@ export const deploymentSchema = z.object({
 export type Deployment = z.output<typeof deploymentSchema>
 
 export const deployments: ReadonlyMap<number, Deployment> = new Map(
-  [anvilDeployment].map((raw) => {
+  [anvilDeployment, xLayerTestnetDeployment].map((raw) => {
     const deployment = deploymentSchema.parse(raw)
     return [deployment.chainId, deployment]
   }),

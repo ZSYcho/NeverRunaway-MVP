@@ -1,0 +1,7 @@
+{
+  "chainId": 1952,
+  "factory": "0x57C16A1Dcc467d475CE25AFBcD76172EF592611f",
+  "startBlock": 44027017,
+  "usdc": "0x83EF7d930c5730Fe01fF485828AF7ADF8e1c1DcB",
+  "usdcFaucet": true
+}
