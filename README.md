@@ -39,6 +39,10 @@
 
 ## 🛠️ 如何在本地运行 (How to Run)
 
+> 项目正在重构为 pnpm monorepo（React + wagmi + Hono，合约见 `contracts/`）。新的本地开发方式见 [docs/development.md](docs/development.md)；下面是旧版 MVP 的运行方式。
+>
+> The project is being rebuilt as a pnpm monorepo. For the current local setup, see [docs/development.md](docs/development.md). The steps below describe the legacy MVP.
+
 只需几步即可在本地跑起整个核心业务逻辑：
 
 1. **环境准备**
