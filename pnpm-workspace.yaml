@@ -1,0 +1,16 @@
+packages:
+  - apps/*
+  - packages/*
+
+# Supply-chain guard: skip versions published in the last 24h.
+minimumReleaseAge: 1440
+
+# One version per shared dependency across the workspace; packages reference it as "catalog:".
+catalog:
+  '@types/node': ^24.19.2
+  oxlint: ^1.88.0
+  prettier: ^3.9.10
+  typescript: ~6.0.3
+  viem: ^2.57.7
+  vitest: ^5.0.5
+  zod: ^4.6.7

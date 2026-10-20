@@ -1,0 +1,14 @@
+# Solidity is formatted by `forge fmt`.
+contracts/
+
+# Generated files.
+pnpm-lock.yaml
+packages/shared/src/generated.ts
+packages/shared/src/deployments/
+
+# Legacy MVP frontend and deploy config, replaced later.
+frontend/
+render.yaml
+
+# Kept as-is until the English rewrite.
+README.md
