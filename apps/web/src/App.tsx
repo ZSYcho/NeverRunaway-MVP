@@ -22,7 +22,8 @@ const router = createBrowserRouter([
 
 export function App() {
   return (
-    <WagmiProvider config={wagmiConfig}>
+    // Sessions are restored by useWalletBootstrap, which also covers WalletConnect.
+    <WagmiProvider config={wagmiConfig} reconnectOnMount={false}>
       <QueryClientProvider client={queryClient}>
         <I18nProvider>
           <RouterProvider router={router} />
