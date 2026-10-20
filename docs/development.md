@@ -25,6 +25,10 @@ pnpm dev
 `pnpm dev` starts a fresh anvil chain, seeds it with `contracts/script/DevSeed.s.sol`, then runs
 the API on `:8787` and the web app on `:5173` (which proxies `/api`). Ctrl+C stops everything.
 
+Wallet extensions connect out of the box. To offer WalletConnect as well, put a Reown project ID
+in `apps/web/.env.local` (see `apps/web/.env.example`). How wallets connect, and how to test in a
+phone wallet, is described in [wallet-access.md](wallet-access.md).
+
 ### Demo data
 
 The seed always produces the same addresses on a fresh chain.
