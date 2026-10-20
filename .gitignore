@@ -8,6 +8,8 @@ contracts/cache/
 contracts/broadcast/*/31337/
 contracts/broadcast/**/dry-run/
 contracts/broadcast/**/*.recovery.lock
+# run-latest.json is the deployment record; git history replaces Foundry's timestamped copies.
+contracts/broadcast/**/run-[0-9]*.json
 .env
 .env.local
 .env.*.local

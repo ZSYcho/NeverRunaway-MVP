@@ -34,7 +34,8 @@ describe('committed deployments', () => {
     }
   })
 
-  it('include the local anvil chain', () => {
+  it('include the local anvil chain and the X Layer testnet staging deployment', () => {
     expect(getDeployment(31337)?.usdcFaucet).toBe(true)
+    expect(getDeployment(1952)?.usdcFaucet).toBe(true)
   })
 })
