@@ -68,6 +68,17 @@ describe('decodePayCode', () => {
     expect(decodePayCode(`#${encodePayCode(code)}`)).toEqual(code)
   })
 
+  it('reads a link that was percent-encoded on the way, as deep links and chat apps do', () => {
+    const link = `https://example.com/merchant/cashier#${encodePayCode(code)}`
+    expect(decodePayCode(encodeURIComponent(link))).toEqual(code)
+    expect(
+      decodePayCode(
+        `https://example.com/merchant/cashier#${encodeURIComponent(encodePayCode(code))}`,
+      ),
+    ).toEqual(code)
+    expect(decodePayCode('https://example.com/merchant/cashier#%E0%A4%A')).toBeUndefined()
+  })
+
   it('checksums addresses written in any case', () => {
     const decoded = decodePayCode(
       fragmentWith({ store: store.toLowerCase(), user: user.toUpperCase().replace('0X', '0x') }),
