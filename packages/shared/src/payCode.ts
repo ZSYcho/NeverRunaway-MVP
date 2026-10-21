@@ -94,6 +94,11 @@ const payCodeParams = z.object({
  */
 export function decodePayCode(input: string): PayCode | undefined {
   const text = input.trim()
+  // A code never needs escaping, so '%' means a deep link or a chat app encoded the link on the way.
+  return readFragment(text) ?? (text.includes('%') ? readFragment(decodeOnce(text)) : undefined)
+}
+
+function readFragment(text: string): PayCode | undefined {
   // A whole link or just its fragment: either way the code is what follows the '#'.
   const fragment = text.slice(text.indexOf('#') + 1)
   const params = fragment.split('&').map((pair) => {
@@ -104,6 +109,15 @@ export function decodePayCode(input: string): PayCode | undefined {
   if (!parsed.success) return undefined
   const { chain, store, user, amount, nonce, deadline, sig } = parsed.data
   return { chainId: chain, store, user, amount, nonce, deadline, signature: sig }
+}
+
+function decodeOnce(text: string): string {
+  try {
+    return decodeURIComponent(text)
+  } catch {
+    // A malformed escape: leave the text as it is, which then fails to parse.
+    return text
+  }
 }
 
 /** eip712Domain() as viem decodes it (ERC-5267). */
