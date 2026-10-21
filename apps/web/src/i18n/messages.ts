@@ -132,6 +132,9 @@ export const zh = {
   txNothingToWithdraw: '目前没有可以提现的收入。',
   txAlreadyClosed: '门店已经关闭了。',
   txBonusPoolTooLow: '赠送池里没有这么多未分配的额度。',
+  txInvalidSignature: '签名无效，或者这个付款码已经用过了。',
+  txSignatureExpired: '付款码已过期。',
+  txInsufficientCredit: '储值余额不足。',
   txReverted: '交易在链上执行失败。',
 
   formAmountInvalid: '请输入大于 0 的有效金额。',
@@ -393,6 +396,9 @@ export const en: Record<MessageKey, string> = {
   txNothingToWithdraw: 'There are no earnings to withdraw yet.',
   txAlreadyClosed: 'The store is already closed.',
   txBonusPoolTooLow: "The bonus pool doesn't hold that much unallocated bonus.",
+  txInvalidSignature: 'The signature is invalid, or the pay code was already used.',
+  txSignatureExpired: 'The pay code has expired.',
+  txInsufficientCredit: 'Not enough credit.',
   txReverted: 'The transaction failed on chain.',
 
   formAmountInvalid: 'Enter a valid amount above 0.',
