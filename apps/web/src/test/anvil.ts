@@ -11,7 +11,7 @@ import {
 import { afterEach, beforeEach, inject } from 'vitest'
 import { type Config, createConfig } from 'wagmi'
 import { connect, writeContract } from 'wagmi/actions'
-import { mock } from 'wagmi/connectors'
+import { type MockParameters, mock } from 'wagmi/connectors'
 import type { TxProgress } from '../tx/confirmAndWait.ts'
 
 const rpcUrl = inject('anvilRpcUrl')
@@ -47,11 +47,14 @@ const deployment = getDeployment(anvil.id)
 if (!deployment) throw new Error('No anvil deployment')
 export const { factory, usdc } = deployment
 
-/** A wagmi config whose mock wallet controls `account` (connect it with wagmi's `connect`). */
-export function createTestConfig(account: Address) {
+/**
+ * A wagmi config whose mock wallet controls `account` (connect it with wagmi's `connect`).
+ * `features` makes the wallet misbehave, for example declining every signature request.
+ */
+export function createTestConfig(account: Address, features?: MockParameters['features']) {
   return createConfig({
     chains: [testChain],
-    connectors: [mock({ accounts: [account] })],
+    connectors: [mock({ accounts: [account], features })],
     transports: { [testChain.id]: http(rpcUrl) },
     multiInjectedProviderDiscovery: false,
     storage: null,
