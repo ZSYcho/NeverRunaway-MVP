@@ -1,10 +1,12 @@
 import { storeDepositContractAbi, storeDepositFactoryAbi } from '@neverrunaway/shared'
+import { Link } from 'react-router'
 import type { Address } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 import { deployment, targetChain } from '../../chain.ts'
 import { Notice } from '../../components/Notice.tsx'
 import { useI18n } from '../../i18n/useI18n.ts'
 import { shortAddress } from '../../lib/format.ts'
+import { StoreStatusBadge } from './StoreStatusBadge.tsx'
 
 /** Stores come straight from the factory on chain; nothing here depends on the backend. */
 export function StoreList() {
@@ -40,26 +42,22 @@ function StoreCard({ address }: { address: Address }) {
       { ...store, functionName: 'merchant' },
       { ...store, functionName: 'tierCount' },
       { ...store, functionName: 'isActive' },
+      { ...store, functionName: 'closed' },
     ],
   })
-  const [merchant, tierCount, isActive] = data ?? []
+  const [merchant, tierCount, isActive, closed] = data ?? []
 
   return (
-    <article className="glass-card flex flex-col gap-4 p-6 transition hover:-translate-y-0.5 hover:border-indigo-400/40">
+    <Link
+      to={`/stores/${address}`}
+      className="glass-card flex flex-col gap-4 p-6 transition hover:-translate-y-0.5 hover:border-indigo-400/40"
+    >
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs tracking-wider text-slate-500 uppercase">{t('storeContract')}</p>
           <h3 className="font-mono text-lg font-semibold">{shortAddress(address)}</h3>
         </div>
-        {isActive !== undefined && (
-          <span
-            className={`rounded-full px-2.5 py-1 text-xs ${
-              isActive ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-700/60 text-slate-400'
-            }`}
-          >
-            {isActive ? t('statusActive') : t('statusInactive')}
-          </span>
-        )}
+        {isActive !== undefined && <StoreStatusBadge isActive={isActive} closed={closed} />}
       </div>
       <dl className="grid grid-cols-2 gap-3 text-sm">
         <div>
@@ -71,6 +69,6 @@ function StoreCard({ address }: { address: Address }) {
           <dd>{tierCount?.toString() ?? '…'}</dd>
         </div>
       </dl>
-    </article>
+    </Link>
   )
 }
