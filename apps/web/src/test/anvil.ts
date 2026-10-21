@@ -1,9 +1,18 @@
 import { anvil, getDeployment } from '@neverrunaway/shared'
-import { type Address, createTestClient, defineChain, http, publicActions } from 'viem'
-import { inject } from 'vitest'
-import { createConfig } from 'wagmi'
-import { connect } from 'wagmi/actions'
+import {
+  type Address,
+  createTestClient,
+  defineChain,
+  erc20Abi,
+  type Hex,
+  http,
+  publicActions,
+} from 'viem'
+import { afterEach, beforeEach, inject } from 'vitest'
+import { type Config, createConfig } from 'wagmi'
+import { connect, writeContract } from 'wagmi/actions'
 import { mock } from 'wagmi/connectors'
+import type { TxProgress } from '../tx/confirmAndWait.ts'
 
 const rpcUrl = inject('anvilRpcUrl')
 
@@ -55,4 +64,34 @@ export async function connectAs(account: Address) {
   const config = createTestConfig(account)
   await connect(config, { connector: config.connectors[0]! })
   return config
+}
+
+/** Reverts the chain after every test in the file, so each test starts from the seeded state. */
+export function isolateChainPerTest() {
+  let snapshot: Hex
+  beforeEach(async () => {
+    snapshot = await testClient.snapshot()
+  })
+  afterEach(async () => {
+    await testClient.revert({ id: snapshot })
+  })
+}
+
+export const usdcBalance = (account: Address) =>
+  testClient.readContract({
+    address: usdc,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: [account],
+  })
+
+/** Records each step and phase a flow reports, i.e. every time the wallet would be involved. */
+export function recordProgress() {
+  const events: string[] = []
+  return { events, onProgress: (p: TxProgress<string>) => events.push(`${p.step}:${p.phase}`) }
+}
+
+/** Sends a transaction as the config's connected account and waits until it is mined. */
+export async function send(config: Config, request: Parameters<typeof writeContract>[1]) {
+  await testClient.waitForTransactionReceipt({ hash: await writeContract(config, request) })
 }

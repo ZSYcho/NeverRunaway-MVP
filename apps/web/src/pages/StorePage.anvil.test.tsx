@@ -3,21 +3,14 @@ import { act, cleanup, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
-import type { Hex } from 'viem'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 import { connect } from 'wagmi/actions'
-import { accounts, createTestConfig, stores, testClient } from '../test/anvil.ts'
+import { accounts, createTestConfig, isolateChainPerTest, stores } from '../test/anvil.ts'
 import { renderWithWagmi } from '../test/renderWithWagmi.tsx'
 import { StorePage } from './StorePage.tsx'
 
-let snapshot: Hex
-beforeEach(async () => {
-  snapshot = await testClient.snapshot()
-})
-afterEach(async () => {
-  cleanup()
-  await testClient.revert({ id: snapshot })
-})
+isolateChainPerTest()
+afterEach(cleanup)
 
 function renderStore(address: string) {
   const router = createMemoryRouter([{ path: '/stores/:address', element: <StorePage /> }], {

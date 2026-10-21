@@ -1,12 +1,21 @@
 import { storeDepositContractAbi, storeDepositFactoryAbi } from '@neverrunaway/shared'
-import { type Address, erc20Abi, type Hex, parseEther } from 'viem'
+import { type Address, erc20Abi, parseEther } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import type { Config } from 'wagmi'
-import { writeContract } from 'wagmi/actions'
+import { describe, expect, it } from 'vitest'
 import { txErrorKey } from '../lib/txErrors.ts'
-import { accounts, connectAs, factory, stores, testChain, testClient, usdc } from '../test/anvil.ts'
-import type { TxProgress } from './confirmAndWait.ts'
+import {
+  accounts,
+  connectAs,
+  factory,
+  isolateChainPerTest,
+  recordProgress,
+  send,
+  stores,
+  testChain,
+  testClient,
+  usdc,
+  usdcBalance,
+} from '../test/anvil.ts'
 import { needsApproval } from './approve.ts'
 import { deposit } from './deposit.ts'
 import { fundOnAnvil, mintTestUsdc } from './faucet.ts'
@@ -15,22 +24,7 @@ import { refund } from './refund.ts'
 const USDC = 1_000_000n
 const chainId = testChain.id
 
-// Every test starts from the freshly seeded chain.
-let snapshot: Hex
-beforeEach(async () => {
-  snapshot = await testClient.snapshot()
-})
-afterEach(async () => {
-  await testClient.revert({ id: snapshot })
-})
-
-const usdcBalance = (account: Address) =>
-  testClient.readContract({
-    address: usdc,
-    abi: erc20Abi,
-    functionName: 'balanceOf',
-    args: [account],
-  })
+isolateChainPerTest()
 
 const storeRead = (store: Address, functionName: 'userPrincipal' | 'userBonus', account: Address) =>
   testClient.readContract({
@@ -39,16 +33,6 @@ const storeRead = (store: Address, functionName: 'userPrincipal' | 'userBonus', 
     functionName,
     args: [account],
   })
-
-/** Records each step and phase a flow reports, i.e. every time the wallet would be involved. */
-function recordProgress() {
-  const events: string[] = []
-  return { events, onProgress: (p: TxProgress<string>) => events.push(`${p.step}:${p.phase}`) }
-}
-
-async function send(config: Config, request: Parameters<typeof writeContract>[1]) {
-  await testClient.waitForTransactionReceipt({ hash: await writeContract(config, request) })
-}
 
 describe('deposit', () => {
   const cafeTier0 = { chainId, store: stores.cafe, usdc, tierId: 0n, depositAmount: 50n * USDC }
