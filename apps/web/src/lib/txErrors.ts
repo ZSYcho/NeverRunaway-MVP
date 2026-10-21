@@ -18,7 +18,8 @@ export class PreflightError extends Error {
   }
 }
 
-// Custom errors from StoreDepositContract, and ERC-20 errors that bubble up through SafeERC20.
+// Custom errors from StoreDepositContract (also raised through the factory, which deploys stores),
+// and ERC-20 errors that bubble up through SafeERC20.
 const revertKeys: Partial<Record<string, MessageKey>> = {
   InsufficientBonusPool: 'txBonusSoldOut',
   MemberLevelTooLow: 'txMembersOnly',
@@ -27,6 +28,11 @@ const revertKeys: Partial<Record<string, MessageKey>> = {
   StoreNotActive: 'txStoreNotActive',
   StoreStillActive: 'txStoreStillActive',
   NothingToRefund: 'txNothingToRefund',
+  OnlyMerchant: 'txOnlyMerchant',
+  InvalidTier: 'txInvalidTier',
+  InvalidValidUntil: 'txInvalidValidUntil',
+  NothingToWithdraw: 'txNothingToWithdraw',
+  AlreadyClosed: 'txAlreadyClosed',
   ERC20InsufficientBalance: 'txInsufficientBalance',
   ERC20InsufficientAllowance: 'txInsufficientAllowance',
 }
