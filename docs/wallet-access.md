@@ -54,16 +54,16 @@ characters such as `%` and `+` that broke unencoded OKX links.
 ## Testing on a phone
 
 A phone can't reach anvil on your machine, so phone testing uses X Layer testnet, and the app needs
-an https URL that wallet browsers will open.
+an https URL that wallet browsers will open. `pnpm dev:phone` builds the app for X Layer testnet,
+serves it through a temporary [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/)
+tunnel (`https://<random>.trycloudflare.com`) and prints a QR code in the terminal. Scanning it
+with a wallet app's scanner opens the app in that wallet's browser, which also exercises the
+scanner entry point.
 
-```sh
-VITE_CHAIN_ID=1952 pnpm --filter @neverrunaway/web dev
-# in another terminal: a temporary public https URL (https://<random>.trycloudflare.com)
-cloudflared tunnel --url http://localhost:5173
-```
-
-Vite accepts `*.trycloudflare.com` hosts. Open the URL inside a wallet app, or scan it with the
-wallet's scanner.
+The script waits for the tunnel to answer before printing the code, and probes it through a
+DNS-over-HTTPS resolver: a lookup through the system resolver before the new hostname exists gets
+"no such host" cached, sometimes by the router the phone shares, for longer than the record takes
+to appear.
 
 ## To verify on devices
 

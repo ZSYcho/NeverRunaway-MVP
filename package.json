@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "bash scripts/dev.sh",
+    "dev:phone": "bash scripts/phone.sh",
     "gen": "pnpm --filter @neverrunaway/shared gen",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "oxlint": "catalog:",
-    "prettier": "catalog:"
+    "prettier": "catalog:",
+    "qrcode": "^1.5.4"
   }
 }
