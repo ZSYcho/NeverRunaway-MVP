@@ -251,6 +251,16 @@ export const zh = {
   copyLink: '复制链接',
   downloadPoster: '下载海报（PNG）',
   posterFailed: '这个浏览器没能生成海报，可以直接截图保存上面的二维码。',
+
+  payStoreNotActive: '门店已关店或到期，储值不能再消费，可以退回本金。',
+  paySmartAccountUndeployed:
+    '你的智能合约钱包还没有部署到这条链上，门店合约验证不了它的签名。先用它发一笔交易，再生成付款码。',
+  paySignatureUnusable: '门店合约验证不了钱包返回的签名，这个付款码用不了。请换个钱包或账户再试。',
+  codeCharged: '这个付款码已经收过款了。',
+  codeExpired: '付款码已过期，请顾客重新生成。',
+  codeStoreInactive: '门店已关店或到期，不能再收款。',
+  codeInsufficientCredit: '顾客的储值不够这笔付款。',
+  codeInvalid: '付款码的签名验证不通过，不要收这笔款。',
 }
 
 export type MessageKey = keyof typeof zh
@@ -523,6 +533,18 @@ export const en: Record<MessageKey, string> = {
   downloadPoster: 'Download poster (PNG)',
   posterFailed:
     "This browser couldn't create the poster. A screenshot of the QR code above works too.",
+
+  payStoreNotActive:
+    'The store is closed or expired: credit can no longer be spent, but you can refund your principal.',
+  paySmartAccountUndeployed:
+    "Your smart account isn't deployed on this network yet, so the store's contract can't check its signature. Send any transaction from it first, then make the code again.",
+  paySignatureUnusable:
+    "The store's contract can't verify the signature your wallet returned, so the code would not work. Try another wallet or account.",
+  codeCharged: 'This code has already been charged.',
+  codeExpired: 'This code has expired. Ask the customer for a new one.',
+  codeStoreInactive: 'The store is closed or expired and can no longer charge credit.',
+  codeInsufficientCredit: "The customer's credit doesn't cover this payment.",
+  codeInvalid: "This code's signature doesn't check out. Don't accept it.",
 }
 
 export const messages = { zh, en }
