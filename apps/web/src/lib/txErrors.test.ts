@@ -7,7 +7,7 @@ import {
   UserRejectedRequestError,
 } from 'viem'
 import { describe, expect, it } from 'vitest'
-import { txErrorKey } from './txErrors.ts'
+import { revertErrorName, txErrorKey } from './txErrors.ts'
 
 /** The error viem throws when a simulated call reverts with a custom error (userRefund takes no args). */
 function reverted(abi: Abi, errorName: string, args: readonly unknown[] = []) {
@@ -36,6 +36,13 @@ describe('txErrorKey', () => {
     expect(txErrorKey(reverted(abi, 'AlreadyClosed'))).toBe('txAlreadyClosed')
   })
 
+  it('names the store contract errors a pay code can run into', () => {
+    const abi = storeDepositContractAbi
+    expect(txErrorKey(reverted(abi, 'InvalidSignature'))).toBe('txInvalidSignature')
+    expect(txErrorKey(reverted(abi, 'SignatureExpired', [1n]))).toBe('txSignatureExpired')
+    expect(txErrorKey(reverted(abi, 'InsufficientCredit', [30n, 20n]))).toBe('txInsufficientCredit')
+  })
+
   it('names token errors that bubble up through the store', () => {
     expect(txErrorKey(reverted(mockUsdcAbi, 'ERC20InsufficientBalance', [someone, 0n, 1n]))).toBe(
       'txInsufficientBalance',
@@ -45,5 +52,18 @@ describe('txErrorKey', () => {
   it('falls back to wallet errors, then to a generic message', () => {
     expect(txErrorKey(new UserRejectedRequestError(new Error('no')))).toBe('walletRejected')
     expect(txErrorKey(new Error('boom'))).toBe('walletError')
+  })
+})
+
+describe('revertErrorName', () => {
+  it('finds the custom error however deeply viem wraps it', () => {
+    expect(revertErrorName(reverted(storeDepositContractAbi, 'InvalidSignature'))).toBe(
+      'InvalidSignature',
+    )
+  })
+
+  it('has no name for errors that are not reverts', () => {
+    expect(revertErrorName(new UserRejectedRequestError(new Error('no')))).toBeUndefined()
+    expect(revertErrorName('boom')).toBeUndefined()
   })
 })
