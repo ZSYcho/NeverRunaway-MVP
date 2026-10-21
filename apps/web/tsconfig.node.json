@@ -6,5 +6,5 @@
     "moduleResolution": "nodenext",
     "types": ["node"]
   },
-  "include": ["vite.config.ts"]
+  "include": ["vite.config.ts", "vitest.anvil.config.ts", "test", "src/test/provided.d.ts"]
 }

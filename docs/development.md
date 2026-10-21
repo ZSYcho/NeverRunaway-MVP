@@ -46,10 +46,14 @@ Accounts #1 to #9 each hold 10,000 test USDC. The cafe store offers 50 → 55 an
 100 → 200 promo; the barber store offers 30 → 30, a 200 → 240 membership tier and a
 members-only 100 → 120 top-up.
 
-To use these accounts in a browser wallet, add the network (RPC `http://127.0.0.1:8545`, chain
-ID `31337`) and import keys derived from anvil's default mnemonic
-(`test test test test test test test test test test test junk`). These keys are public: never
-send real funds to them.
+To try the flows with your own wallet, connect it, let the banner add the local network
+(chain ID `31337`), then press **Get test funds** on a store page: it gives the connected address
+100 ETH for gas and 1,000 test USDC through anvil's dev RPC, without a signature. There's no need
+to import the demo accounts' keys; they come from anvil's public mnemonic, so never put them in a
+wallet that holds real funds.
+
+`pnpm dev` starts a new chain each time. If MetaMask then reports a nonce error, clear its record
+of the old chain: Settings → Advanced → Clear activity tab data.
 
 ## Everyday commands
 
@@ -58,6 +62,7 @@ send real funds to them.
 | `pnpm dev`            | Local chain, demo data, API and web app                                                |
 | `pnpm dev:phone`      | X Layer testnet build behind an HTTPS tunnel, with a QR code to scan in a phone wallet |
 | `pnpm test`           | Unit tests in every package                                                            |
+| `pnpm test:anvil`     | Transaction flows (deposit, refund, faucet) against a fresh anvil chain                |
 | `pnpm test:contracts` | `forge test`                                                                           |
 | `pnpm typecheck`      | TypeScript across the workspace                                                        |
 | `pnpm lint`           | oxlint                                                                                 |

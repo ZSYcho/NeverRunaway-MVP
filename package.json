@@ -13,6 +13,7 @@
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
+    "test:anvil": "pnpm --filter @neverrunaway/web test:anvil",
     "test:contracts": "forge test --root contracts",
     "lint": "oxlint",
     "format": "bash scripts/format.sh --write",

@@ -70,4 +70,6 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm test
+      # Transaction flows against a fresh anvil chain seeded by DevSeed.
+      - run: pnpm test:anvil
       - run: pnpm build

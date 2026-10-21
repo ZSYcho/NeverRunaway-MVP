@@ -6,6 +6,7 @@ import { Layout } from './components/Layout.tsx'
 import { I18nProvider } from './i18n/I18nProvider.tsx'
 import { HomePage } from './pages/HomePage.tsx'
 import { NotFoundPage } from './pages/NotFoundPage.tsx'
+import { StorePage } from './pages/StorePage.tsx'
 import { wagmiConfig } from './wagmi.ts'
 
 const queryClient = new QueryClient()
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'stores/:address', element: <StorePage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
