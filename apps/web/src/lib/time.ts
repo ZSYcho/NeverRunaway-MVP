@@ -10,3 +10,9 @@ export function formatDate(seconds: bigint, lang: Lang): string {
 export function nowInSeconds(): bigint {
   return BigInt(Math.floor(Date.now() / 1000))
 }
+
+/** A date as the YYYY-MM-DD value of an <input type="date">, in the local time zone. */
+export function toDateInputValue(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+}

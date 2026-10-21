@@ -41,3 +41,5 @@ export function useTxFlow<Step extends string>() {
 
   return { run, reset, steps, status, error }
 }
+
+export type TxFlow<Step extends string> = ReturnType<typeof useTxFlow<Step>>

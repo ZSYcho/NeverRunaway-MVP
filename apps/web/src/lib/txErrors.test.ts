@@ -27,6 +27,15 @@ describe('txErrorKey', () => {
     expect(txErrorKey(reverted(abi, 'StoreNotActive'))).toBe('txStoreNotActive')
   })
 
+  it('names the store contract errors a merchant can run into', () => {
+    const abi = storeDepositContractAbi
+    expect(txErrorKey(reverted(abi, 'OnlyMerchant'))).toBe('txOnlyMerchant')
+    expect(txErrorKey(reverted(abi, 'InvalidTier', [10n, 5n]))).toBe('txInvalidTier')
+    expect(txErrorKey(reverted(abi, 'InvalidValidUntil', [1n]))).toBe('txInvalidValidUntil')
+    expect(txErrorKey(reverted(abi, 'NothingToWithdraw'))).toBe('txNothingToWithdraw')
+    expect(txErrorKey(reverted(abi, 'AlreadyClosed'))).toBe('txAlreadyClosed')
+  })
+
   it('names token errors that bubble up through the store', () => {
     expect(txErrorKey(reverted(mockUsdcAbi, 'ERC20InsufficientBalance', [someone, 0n, 1n]))).toBe(
       'txInsufficientBalance',

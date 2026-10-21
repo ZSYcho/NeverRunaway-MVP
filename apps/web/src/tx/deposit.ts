@@ -1,12 +1,13 @@
 import { storeDepositContractAbi } from '@neverrunaway/shared'
-import { type Address, erc20Abi } from 'viem'
+import type { Address } from 'viem'
 import type { Config } from 'wagmi'
-import { readContract, readContracts, simulateContract, writeContract } from 'wagmi/actions'
+import { readContracts, simulateContract, writeContract } from 'wagmi/actions'
 import { tierStatus } from '../features/stores/tiers.ts'
 import type { MessageKey } from '../i18n/messages.ts'
 import { nowInSeconds } from '../lib/time.ts'
 import { PreflightError } from '../lib/txErrors.ts'
 import { storeAbi } from './abis.ts'
+import { approveExactly } from './approve.ts'
 import { confirmAndWait, type TxProgress } from './confirmAndWait.ts'
 
 export type DepositStep = 'approve' | 'deposit'
@@ -18,21 +19,6 @@ export type DepositParameters = {
   usdc: Address
   tierId: bigint
   depositAmount: bigint
-}
-
-/** Whether the store may already pull this deposit, or the user has to approve it first. */
-export async function needsApproval(
-  config: Config,
-  { chainId, account, store, usdc, depositAmount }: Omit<DepositParameters, 'tierId'>,
-): Promise<boolean> {
-  const allowance = await readContract(config, {
-    chainId,
-    address: usdc,
-    abi: erc20Abi,
-    functionName: 'allowance',
-    args: [account, store],
-  })
-  return allowance < depositAmount
 }
 
 const blockedKeys = {
@@ -78,22 +64,11 @@ export async function deposit(
   const { chainId, account, store, usdc, tierId, depositAmount } = parameters
   await assertPurchasable(config, parameters)
 
-  if (await needsApproval(config, parameters)) {
-    const { request } = await simulateContract(config, {
-      chainId,
-      account,
-      address: usdc,
-      abi: erc20Abi,
-      functionName: 'approve',
-      args: [store, depositAmount],
-    })
-    await confirmAndWait(
-      config,
-      chainId,
-      () => writeContract(config, request),
-      (phase, hash) => onProgress({ step: 'approve', phase, hash }),
-    )
-  }
+  await approveExactly(
+    config,
+    { chainId, account, token: usdc, spender: store, amount: depositAmount },
+    (phase, hash) => onProgress({ step: 'approve', phase, hash }),
+  )
 
   const { request } = await simulateContract(config, {
     chainId,
