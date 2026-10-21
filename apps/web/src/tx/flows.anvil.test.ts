@@ -7,7 +7,8 @@ import { writeContract } from 'wagmi/actions'
 import { txErrorKey } from '../lib/txErrors.ts'
 import { accounts, connectAs, factory, stores, testChain, testClient, usdc } from '../test/anvil.ts'
 import type { TxProgress } from './confirmAndWait.ts'
-import { deposit, needsApproval } from './deposit.ts'
+import { needsApproval } from './approve.ts'
+import { deposit } from './deposit.ts'
 import { fundOnAnvil, mintTestUsdc } from './faucet.ts'
 import { refund } from './refund.ts'
 
@@ -56,7 +57,15 @@ describe('deposit', () => {
     const config = await connectAs(accounts.carol)
     const parameters = { ...cafeTier0, account: accounts.carol }
     const before = await usdcBalance(accounts.carol)
-    expect(await needsApproval(config, parameters)).toBe(true)
+    expect(
+      await needsApproval(config, {
+        chainId,
+        account: accounts.carol,
+        token: usdc,
+        spender: stores.cafe,
+        amount: 50n * USDC,
+      }),
+    ).toBe(true)
 
     const { events, onProgress } = recordProgress()
     await deposit(config, parameters, onProgress)
