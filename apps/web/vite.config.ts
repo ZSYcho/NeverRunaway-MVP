@@ -1,12 +1,16 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { configDefaults, defineConfig } from 'vitest/config'
 
 const apiPort = process.env.API_PORT ?? '8787'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  test: {
+    // Flow tests need a local chain; they run with `pnpm test:anvil` (vitest.anvil.config.ts).
+    exclude: [...configDefaults.exclude, '**/*.anvil.test.{ts,tsx}'],
+  },
   build: {
     rolldownOptions: {
       output: {
