@@ -127,6 +127,14 @@ export const zh = {
   txInsufficientBalance: 'USDC 余额不足。',
   txInsufficientAllowance: 'USDC 授权额度不足，请重试。',
   txReverted: '交易在链上执行失败。',
+
+  formAmountInvalid: '请输入大于 0 的有效金额。',
+  formCreditBelowDeposit: '到账额度不能低于储值金额。',
+  formDateInvalid: '日期无效。',
+  formDateInPast: '这个日期已经过去了。',
+  formLevelInvalid: '会员等级须为 0 到 255 的整数。',
+  formExpireDaysInvalid: '经营期限须为 1 到 3650 天。',
+  formNeedOneTier: '至少需要一个储值档位。',
 }
 
 export type MessageKey = keyof typeof zh
@@ -267,6 +275,14 @@ export const en: Record<MessageKey, string> = {
   txInsufficientBalance: 'Not enough USDC.',
   txInsufficientAllowance: 'The USDC allowance is too low. Please try again.',
   txReverted: 'The transaction failed on chain.',
+
+  formAmountInvalid: 'Enter a valid amount above 0.',
+  formCreditBelowDeposit: "Credit can't be less than the deposit.",
+  formDateInvalid: 'Invalid date.',
+  formDateInPast: 'That date has already passed.',
+  formLevelInvalid: 'Member levels are whole numbers from 0 to 255.',
+  formExpireDaysInvalid: 'The term must be 1 to 3,650 days.',
+  formNeedOneTier: 'Add at least one deposit tier.',
 }
 
 export const messages = { zh, en }
