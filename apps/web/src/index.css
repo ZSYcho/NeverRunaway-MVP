@@ -12,6 +12,11 @@
     color-scheme: dark;
   }
 
+  /* Keep the page from scrolling behind an open modal dialog. */
+  html:has(dialog[open]) {
+    overflow: hidden;
+  }
+
   body {
     min-height: 100vh;
     background: linear-gradient(135deg, #09090b 0%, #18181b 100%) fixed;

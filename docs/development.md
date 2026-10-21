@@ -2,11 +2,12 @@
 
 ## Prerequisites
 
-| Tool    | Version                                     | Install                                                                   |
-| ------- | ------------------------------------------- | ------------------------------------------------------------------------- |
-| Node.js | 24 LTS, pinned in `.node-version`           | [fnm](https://github.com/Schniz/fnm), then `fnm install` in the repo root |
-| pnpm    | pinned in `package.json` (`packageManager`) | `npm install -g pnpm`; pnpm then switches to the pinned version by itself |
-| Foundry | 1.8.5, same as CI                           | [foundryup](https://getfoundry.sh), then `foundryup --install v1.8.5`     |
+| Tool        | Version                                     | Install                                                                                               |
+| ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Node.js     | 24 LTS, pinned in `.node-version`           | [fnm](https://github.com/Schniz/fnm), then `fnm install` in the repo root                             |
+| pnpm        | pinned in `package.json` (`packageManager`) | `npm install -g pnpm`; pnpm then switches to the pinned version by itself                             |
+| Foundry     | 1.8.5, same as CI                           | [foundryup](https://getfoundry.sh), then `foundryup --install v1.8.5`                                 |
+| cloudflared | optional, for `pnpm dev:phone`              | [downloads](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/) |
 
 On Windows, use WSL2 and keep the repository and every toolchain inside the Linux filesystem
 (for example `~/code`, not `/mnt/c`). Browsers and wallet extensions stay on Windows: WSL2
@@ -24,6 +25,10 @@ pnpm dev
 
 `pnpm dev` starts a fresh anvil chain, seeds it with `contracts/script/DevSeed.s.sol`, then runs
 the API on `:8787` and the web app on `:5173` (which proxies `/api`). Ctrl+C stops everything.
+
+Wallet extensions connect out of the box. To offer WalletConnect as well, put a Reown project ID
+in `apps/web/.env.local` (see `apps/web/.env.example`). How wallets connect, and how to test in a
+phone wallet, is described in [wallet-access.md](wallet-access.md).
 
 ### Demo data
 
@@ -48,16 +53,17 @@ send real funds to them.
 
 ## Everyday commands
 
-| Command               | What it does                                                          |
-| --------------------- | --------------------------------------------------------------------- |
-| `pnpm dev`            | Local chain, demo data, API and web app                               |
-| `pnpm test`           | Unit tests in every package                                           |
-| `pnpm test:contracts` | `forge test`                                                          |
-| `pnpm typecheck`      | TypeScript across the workspace                                       |
-| `pnpm lint`           | oxlint                                                                |
-| `pnpm format`         | Prettier (`forge fmt` formats Solidity)                               |
-| `pnpm gen`            | Regenerate typed ABIs after a contract change (CI fails if it drifts) |
-| `pnpm build`          | Production build of the web app                                       |
+| Command               | What it does                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| `pnpm dev`            | Local chain, demo data, API and web app                                                |
+| `pnpm dev:phone`      | X Layer testnet build behind an HTTPS tunnel, with a QR code to scan in a phone wallet |
+| `pnpm test`           | Unit tests in every package                                                            |
+| `pnpm test:contracts` | `forge test`                                                                           |
+| `pnpm typecheck`      | TypeScript across the workspace                                                        |
+| `pnpm lint`           | oxlint                                                                                 |
+| `pnpm format`         | Prettier (`forge fmt` formats Solidity)                                                |
+| `pnpm gen`            | Regenerate typed ABIs after a contract change (CI fails if it drifts)                  |
+| `pnpm build`          | Production build of the web app                                                        |
 
 ## Layout
 
