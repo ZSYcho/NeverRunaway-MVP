@@ -52,6 +52,12 @@ To try the flows with your own wallet, connect it, let the banner add the local 
 to import the demo accounts' keys; they come from anvil's public mnemonic, so never put them in a
 wallet that holds real funds.
 
+The merchant side works the same way. Under **Merchant**, open a store from your own wallet, fund
+its bonus pool and add or retire tiers; the bonus pool card shows how many more deposits each
+bonus tier can take, and plans the funding for a promotion. Each store's management page also has
+a QR code of its public page for the counter. A phone can only open it from a public URL, such as
+the one `pnpm dev:phone` prints.
+
 `pnpm dev` starts a new chain each time. If MetaMask then reports a nonce error, clear its record
 of the old chain: Settings → Advanced → Clear activity tab data.
 
@@ -62,7 +68,7 @@ of the old chain: Settings → Advanced → Clear activity tab data.
 | `pnpm dev`            | Local chain, demo data, API and web app                                                |
 | `pnpm dev:phone`      | X Layer testnet build behind an HTTPS tunnel, with a QR code to scan in a phone wallet |
 | `pnpm test`           | Unit tests in every package                                                            |
-| `pnpm test:anvil`     | Transaction flows (deposit, refund, faucet) against a fresh anvil chain                |
+| `pnpm test:anvil`     | Customer and merchant flows and pages against a fresh anvil chain                      |
 | `pnpm test:contracts` | `forge test`                                                                           |
 | `pnpm typecheck`      | TypeScript across the workspace                                                        |
 | `pnpm lint`           | oxlint                                                                                 |
