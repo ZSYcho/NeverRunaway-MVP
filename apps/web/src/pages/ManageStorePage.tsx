@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router'
 import { type Address, getAddress, isAddress, isAddressEqual } from 'viem'
 import { useConnection } from 'wagmi'
@@ -8,6 +9,7 @@ import { Notice } from '../components/Notice.tsx'
 import { BonusPoolPanel } from '../features/merchant/BonusPoolPanel.tsx'
 import { CloseStoreCard } from '../features/merchant/CloseStoreCard.tsx'
 import { EarningsCard } from '../features/merchant/EarningsCard.tsx'
+import { StorePosterDialog } from '../features/merchant/StorePosterDialog.tsx'
 import { TierManager } from '../features/merchant/TierManager.tsx'
 import { FundsPanel } from '../features/stores/FundsPanel.tsx'
 import { StoreStatusBadge } from '../features/stores/StoreStatusBadge.tsx'
@@ -44,6 +46,7 @@ function ManageStore({ store }: { store: Address }) {
   const decimals = useUsdcDecimals()
   const { address: account, chainId } = useConnection()
   const location = useLocation()
+  const [posterOpen, setPosterOpen] = useState(false)
   const { isFactoryStore, isError, state, user } = useStore(store)
 
   if (!deployment) return <Notice>{t('notDeployed', { chain: targetChain.name })}</Notice>
@@ -99,6 +102,9 @@ function ManageStore({ store }: { store: Address }) {
           <Link to={`/stores/${store}`} className={secondaryButton}>
             {t('customerView')}
           </Link>
+          <button type="button" onClick={() => setPosterOpen(true)} className={secondaryButton}>
+            {t('showPoster')}
+          </button>
         </div>
       </header>
 
@@ -145,6 +151,8 @@ function ManageStore({ store }: { store: Address }) {
           />
         </aside>
       </div>
+
+      {posterOpen && <StorePosterDialog store={store} onClose={() => setPosterOpen(false)} />}
     </div>
   )
 }

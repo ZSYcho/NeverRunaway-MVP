@@ -172,6 +172,7 @@ export const zh = {
   notOurStore: '这个地址不是 NeverRunaway 创建的门店。',
   notYourStore: '这家门店属于 {merchant}。请在钱包里切换到这个账户来管理它。',
   customerView: '顾客视角',
+  showPoster: '门店二维码',
 
   earningsTitle: '营业收入',
   earningsHint: '顾客签名确认的每一笔消费都计入这里，随时可以提现。',
@@ -238,6 +239,15 @@ export const zh = {
   stepCloseStore: '关闭门店',
   storeClosedDone: '门店已关闭。',
   storeEndedNote: '门店已关店或到期：顾客可以随时退回本金，你的营业收入和赠送池余额仍然可以提现。',
+
+  posterTitle: '门店二维码',
+  posterHeading: '扫码储值',
+  posterHint: '用钱包 App 扫一扫，储值金锁在链上合约里。',
+  posterLocalhost:
+    '这个链接指向本机地址，手机打不开。要让手机扫码，请用 pnpm dev:phone 启动一个公网地址。',
+  copyLink: '复制链接',
+  downloadPoster: '下载海报（PNG）',
+  posterFailed: '这个浏览器没能生成海报，可以直接截图保存上面的二维码。',
 }
 
 export type MessageKey = keyof typeof zh
@@ -425,6 +435,7 @@ export const en: Record<MessageKey, string> = {
   notYourStore:
     'This store belongs to {merchant}. Switch to that account in your wallet to manage it.',
   customerView: 'Customer view',
+  showPoster: 'Store QR code',
 
   earningsTitle: 'Earnings',
   earningsHint: 'Every purchase a customer signs off on lands here, withdrawable any time.',
@@ -496,6 +507,16 @@ export const en: Record<MessageKey, string> = {
   storeClosedDone: 'The store is closed.',
   storeEndedNote:
     'The store is closed or expired: customers can refund their principal any time, and your earnings and bonus pool stay withdrawable.',
+
+  posterTitle: 'Store QR code',
+  posterHeading: 'Scan to top up',
+  posterHint: 'Scan with your wallet app. Deposits stay locked in an on-chain contract.',
+  posterLocalhost:
+    "This link points to this computer, which phones can't reach. For phone scanning, start a public URL with pnpm dev:phone.",
+  copyLink: 'Copy link',
+  downloadPoster: 'Download poster (PNG)',
+  posterFailed:
+    "This browser couldn't create the poster. A screenshot of the QR code above works too.",
 }
 
 export const messages = { zh, en }
