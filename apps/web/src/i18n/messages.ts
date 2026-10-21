@@ -246,12 +246,32 @@ export const zh = {
   posterTitle: '门店二维码',
   posterHeading: '扫码储值',
   posterHint: '用钱包 App 扫一扫，储值金锁在链上合约里。',
-  posterLocalhost:
+  localLinkNote:
     '这个链接指向本机地址，手机打不开。要让手机扫码，请用 pnpm dev:phone 启动一个公网地址。',
   copyLink: '复制链接',
   downloadPoster: '下载海报（PNG）',
   posterFailed: '这个浏览器没能生成海报，可以直接截图保存上面的二维码。',
 
+  payAtCounter: '到店付款',
+  payTitle: '到店付款',
+  payAmountLabel: '付款金额（USDC）',
+  payAvailable: '可用 {credit} USDC',
+  payExceedsCredit: '超过了可用余额 {credit} USDC。',
+  paySignHint:
+    '钱包会请你签名授权这笔付款。签名不花 gas：它只允许这家店在 {minutes} 分钟内扣一次这个金额。',
+  payWalletUnits: '钱包按 USDC 的最小单位显示金额：{raw} 就是 {amount} USDC。',
+  createPayCode: '生成付款码',
+  stepSignPayment: '签名授权付款',
+  payCodeHeading: '向收银员出示',
+  payCodeWaiting: '等待商家收款…',
+  payCodeExpiresIn: '{time} 后失效',
+  payCodeOnce: '只给收银员看。{time} 前这家店可以用它收一次款，关掉窗口也不会作废。',
+  changeAmount: '修改金额',
+  payCodePaid: '已付款 {amount} USDC',
+  payCodeCharged: '已付款',
+  chargeSplit: '本金 {principal} + 赠送 {bonus}',
+  payCodeExpired: '付款码已过期，没有扣款。',
+  newPayCode: '重新生成',
   payStoreNotActive: '门店已关店或到期，储值不能再消费，可以退回本金。',
   paySmartAccountUndeployed:
     '你的智能合约钱包还没有部署到这条链上，门店合约验证不了它的签名。先用它发一笔交易，再生成付款码。',
@@ -527,13 +547,35 @@ export const en: Record<MessageKey, string> = {
   posterTitle: 'Store QR code',
   posterHeading: 'Scan to top up',
   posterHint: 'Scan with your wallet app. Deposits stay locked in an on-chain contract.',
-  posterLocalhost:
+  localLinkNote:
     "This link points to this computer, which phones can't reach. For phone scanning, start a public URL with pnpm dev:phone.",
   copyLink: 'Copy link',
   downloadPoster: 'Download poster (PNG)',
   posterFailed:
     "This browser couldn't create the poster. A screenshot of the QR code above works too.",
 
+  payAtCounter: 'Pay at the counter',
+  payTitle: 'Pay at the counter',
+  payAmountLabel: 'Amount (USDC)',
+  payAvailable: '{credit} USDC available',
+  payExceedsCredit: 'That is more than your {credit} USDC of credit.',
+  paySignHint:
+    'Your wallet asks you to sign this payment. Signing costs no gas: it only lets this store charge this amount once, within {minutes} minutes.',
+  payWalletUnits:
+    "Your wallet shows the amount in USDC's smallest unit: {raw} means {amount} USDC.",
+  createPayCode: 'Create pay code',
+  stepSignPayment: 'Sign the payment',
+  payCodeHeading: 'Show this to the cashier',
+  payCodeWaiting: 'Waiting for the store to charge it…',
+  payCodeExpiresIn: 'Expires in {time}',
+  payCodeOnce:
+    'Only show it to the cashier. Until {time}, this store can charge it once, even if you close this window.',
+  changeAmount: 'Change amount',
+  payCodePaid: 'Paid {amount} USDC',
+  payCodeCharged: 'Paid',
+  chargeSplit: '{principal} principal + {bonus} bonus',
+  payCodeExpired: 'This code expired without being charged.',
+  newPayCode: 'New code',
   payStoreNotActive:
     'The store is closed or expired: credit can no longer be spent, but you can refund your principal.',
   paySmartAccountUndeployed:
