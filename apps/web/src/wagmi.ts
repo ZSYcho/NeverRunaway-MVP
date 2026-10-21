@@ -14,6 +14,9 @@ export const wagmiConfig = createConfig({
     [anvil.id]: http(),
     [xLayerTestnet.id]: http(),
   },
+  // Neither chain definition sets a block time, so viem would poll every 4 s. Both produce blocks
+  // in about a second (anvil instantly), and receipts should show up as soon as they exist.
+  pollingInterval: 1_000,
 })
 
 declare module 'wagmi' {

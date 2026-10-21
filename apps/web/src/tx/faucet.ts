@@ -32,7 +32,13 @@ export async function fundOnAnvil({
   usdcAmount: bigint
 }) {
   const transport = http(chain.rpcUrls.default.http[0])
-  const testClient = createTestClient({ chain, mode: 'anvil', transport }).extend(publicActions)
+  // Anvil mines instantly, so there is no reason to wait for viem's default 4 s poll.
+  const testClient = createTestClient({
+    chain,
+    mode: 'anvil',
+    transport,
+    pollingInterval: 250,
+  }).extend(publicActions)
   if ((await testClient.getBalance({ address: account })) < parseEther('1')) {
     await testClient.setBalance({ address: account, value: parseEther('100') })
   }
