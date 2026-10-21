@@ -281,6 +281,29 @@ export const zh = {
   codeStoreInactive: '门店已关店或到期，不能再收款。',
   codeInsufficientCredit: '顾客的储值不够这笔付款。',
   codeInvalid: '付款码的签名验证不通过，不要收这笔款。',
+
+  openCashier: '收银台',
+  cashierTitle: '收银台',
+  cashierIntro:
+    '顾客出示付款码后，用钱包 App 的“扫一扫”扫码，收银台会在钱包里打开；也可以把付款链接粘贴到下面。收款从你的商家钱包发起，gas 由你支付。',
+  payLinkLabel: '付款链接',
+  payLinkHint: '可以粘贴，也可以用扫码枪直接扫入。',
+  payLinkInvalid: '这不是有效的付款码链接。',
+  openPayLink: '打开',
+  codeOtherChain: '这个付款码属于另一条链（#{chainId}），收银台运行在 {target}。',
+  chargeHeading: '付款码',
+  chargeCustomer: '顾客',
+  chargeStore: '门店',
+  chargeTimeLeft: '剩余时间',
+  codeChecking: '正在链上核对付款码…',
+  codeReady: '签名有效，可以收款。',
+  codeCreditLeft: '顾客还有 {credit} USDC 储值。',
+  connectToCharge: '连接这家店的商家钱包后即可收款。',
+  codeNotYourStore: '这个付款码属于 {merchant} 的门店。请在钱包里切换到那个账户再收款。',
+  chargeAction: '收款 {amount} USDC',
+  stepCharge: '收款',
+  chargeDone: '已收款 {amount} USDC',
+  nextCustomer: '下一位顾客',
 }
 
 export type MessageKey = keyof typeof zh
@@ -587,6 +610,30 @@ export const en: Record<MessageKey, string> = {
   codeStoreInactive: 'The store is closed or expired and can no longer charge credit.',
   codeInsufficientCredit: "The customer's credit doesn't cover this payment.",
   codeInvalid: "This code's signature doesn't check out. Don't accept it.",
+
+  openCashier: 'Cashier',
+  cashierTitle: 'Cashier',
+  cashierIntro:
+    "When a customer shows a pay code, scan it with your wallet app's scanner and the cashier opens in the wallet. You can also paste the payment link below. Charges are sent from your merchant wallet, which pays the gas.",
+  payLinkLabel: 'Payment link',
+  payLinkHint: 'Paste it, or scan it in with a barcode scanner.',
+  payLinkInvalid: "That isn't a valid pay code link.",
+  openPayLink: 'Open',
+  codeOtherChain: 'This code is for another chain (#{chainId}); this cashier runs on {target}.',
+  chargeHeading: 'Pay code',
+  chargeCustomer: 'Customer',
+  chargeStore: 'Store',
+  chargeTimeLeft: 'Time left',
+  codeChecking: 'Checking the code on chain…',
+  codeReady: 'Signature valid. Ready to charge.',
+  codeCreditLeft: 'The customer has {credit} USDC of credit left.',
+  connectToCharge: "Connect this store's merchant wallet to charge the code.",
+  codeNotYourStore:
+    'This code is for a store run by {merchant}. Switch to that account in your wallet to charge it.',
+  chargeAction: 'Charge {amount} USDC',
+  stepCharge: 'Charge',
+  chargeDone: 'Charged {amount} USDC',
+  nextCustomer: 'Next customer',
 }
 
 export const messages = { zh, en }

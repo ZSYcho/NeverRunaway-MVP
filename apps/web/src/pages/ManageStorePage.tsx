@@ -11,6 +11,7 @@ import { CloseStoreCard } from '../features/merchant/CloseStoreCard.tsx'
 import { EarningsCard } from '../features/merchant/EarningsCard.tsx'
 import { StorePosterDialog } from '../features/merchant/StorePosterDialog.tsx'
 import { TierManager } from '../features/merchant/TierManager.tsx'
+import { CASHIER_PATH } from '../features/pay/codes.ts'
 import { FundsPanel } from '../features/stores/FundsPanel.tsx'
 import { StoreStatusBadge } from '../features/stores/StoreStatusBadge.tsx'
 import { useStore } from '../features/stores/useStore.ts'
@@ -99,6 +100,9 @@ function ManageStore({ store }: { store: Address }) {
           </div>
         </dl>
         <div className="flex flex-wrap gap-2">
+          <Link to={CASHIER_PATH} className={secondaryButton}>
+            {t('openCashier')}
+          </Link>
           <Link to={`/stores/${store}`} className={secondaryButton}>
             {t('customerView')}
           </Link>
