@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
 import { WagmiProvider } from 'wagmi'
@@ -11,12 +12,22 @@ import { wagmiConfig } from './wagmi.ts'
 
 const queryClient = new QueryClient()
 
+// Customers who arrive from a store's QR code never download the merchant pages.
+const MerchantPage = lazy(() =>
+  import('./pages/MerchantPage.tsx').then((module) => ({ default: module.MerchantPage })),
+)
+const ManageStorePage = lazy(() =>
+  import('./pages/ManageStorePage.tsx').then((module) => ({ default: module.ManageStorePage })),
+)
+
 const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
       { index: true, element: <HomePage /> },
       { path: 'stores/:address', element: <StorePage /> },
+      { path: 'merchant', element: <MerchantPage /> },
+      { path: 'merchant/stores/:address', element: <ManageStorePage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

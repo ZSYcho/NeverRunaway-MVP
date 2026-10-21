@@ -1,4 +1,4 @@
-import { type Address, getAddress, isAddress } from 'viem'
+import { type Address, getAddress, isAddress, isAddressEqual } from 'viem'
 import { Link, useParams } from 'react-router'
 import { deployment, explorerUrl, targetChain } from '../chain.ts'
 import { Notice } from '../components/Notice.tsx'
@@ -50,6 +50,14 @@ function StoreDetail({ store }: { store: Address }) {
             {t('storeTitle', { address: shortAddress(store) })}
           </h1>
           <StoreStatusBadge isActive={state.isActive} closed={state.closed} />
+          {user && isAddressEqual(user.account, state.merchant) && (
+            <Link
+              to={`/merchant/stores/${store}`}
+              className="ml-auto rounded-lg border border-white/10 px-3 py-1.5 text-sm text-slate-200 transition hover:bg-slate-800"
+            >
+              {t('manageStore')}
+            </Link>
+          )}
         </div>
         <dl className="grid gap-3 text-sm sm:grid-cols-3">
           <div>
