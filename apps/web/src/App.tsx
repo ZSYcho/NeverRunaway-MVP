@@ -4,6 +4,7 @@ import { createBrowserRouter } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
 import { WagmiProvider } from 'wagmi'
 import { Layout } from './components/Layout.tsx'
+import { CASHIER_PATH } from './features/pay/codes.ts'
 import { I18nProvider } from './i18n/I18nProvider.tsx'
 import { HomePage } from './pages/HomePage.tsx'
 import { NotFoundPage } from './pages/NotFoundPage.tsx'
@@ -19,6 +20,9 @@ const MerchantPage = lazy(() =>
 const ManageStorePage = lazy(() =>
   import('./pages/ManageStorePage.tsx').then((module) => ({ default: module.ManageStorePage })),
 )
+const CashierPage = lazy(() =>
+  import('./pages/CashierPage.tsx').then((module) => ({ default: module.CashierPage })),
+)
 
 const router = createBrowserRouter([
   {
@@ -28,6 +32,8 @@ const router = createBrowserRouter([
       { path: 'stores/:address', element: <StorePage /> },
       { path: 'merchant', element: <MerchantPage /> },
       { path: 'merchant/stores/:address', element: <ManageStorePage /> },
+      // Pay codes link here, so the path is part of every code already shown at a counter.
+      { path: CASHIER_PATH, element: <CashierPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

@@ -132,6 +132,9 @@ export const zh = {
   txNothingToWithdraw: '目前没有可以提现的收入。',
   txAlreadyClosed: '门店已经关闭了。',
   txBonusPoolTooLow: '赠送池里没有这么多未分配的额度。',
+  txInvalidSignature: '签名无效，或者这个付款码已经用过了。',
+  txSignatureExpired: '付款码已过期。',
+  txInsufficientCredit: '储值余额不足。',
   txReverted: '交易在链上执行失败。',
 
   formAmountInvalid: '请输入大于 0 的有效金额。',
@@ -243,11 +246,64 @@ export const zh = {
   posterTitle: '门店二维码',
   posterHeading: '扫码储值',
   posterHint: '用钱包 App 扫一扫，储值金锁在链上合约里。',
-  posterLocalhost:
+  localLinkNote:
     '这个链接指向本机地址，手机打不开。要让手机扫码，请用 pnpm dev:phone 启动一个公网地址。',
   copyLink: '复制链接',
   downloadPoster: '下载海报（PNG）',
   posterFailed: '这个浏览器没能生成海报，可以直接截图保存上面的二维码。',
+
+  payAtCounter: '到店付款',
+  payTitle: '到店付款',
+  payAmountLabel: '付款金额（USDC）',
+  payAvailable: '可用 {credit} USDC',
+  payExceedsCredit: '超过了可用余额 {credit} USDC。',
+  paySignHint:
+    '钱包会请你签名授权这笔付款。签名不花 gas：它只允许这家店在 {minutes} 分钟内扣一次这个金额。',
+  payWalletUnits: '钱包按 USDC 的最小单位显示金额：{raw} 就是 {amount} USDC。',
+  createPayCode: '生成付款码',
+  stepSignPayment: '签名授权付款',
+  payCodeHeading: '向收银员出示',
+  payCodeWaiting: '等待商家收款…',
+  payCodeExpiresIn: '{time} 后失效',
+  payCodeOnce: '只给收银员看。{time} 前这家店可以用它收一次款，关掉窗口也不会作废。',
+  changeAmount: '修改金额',
+  payCodePaid: '已付款 {amount} USDC',
+  payCodeCharged: '已付款',
+  chargeSplit: '本金 {principal} + 赠送 {bonus}',
+  payCodeExpired: '付款码已过期，没有扣款。',
+  newPayCode: '重新生成',
+  payStoreNotActive: '门店已关店或到期，储值不能再消费，可以退回本金。',
+  paySmartAccountUndeployed:
+    '你的智能合约钱包还没有部署到这条链上，门店合约验证不了它的签名。先用它发一笔交易，再生成付款码。',
+  paySignatureUnusable: '门店合约验证不了钱包返回的签名，这个付款码用不了。请换个钱包或账户再试。',
+  codeCharged: '这个付款码已经收过款了。',
+  codeExpired: '付款码已过期，请顾客重新生成。',
+  codeStoreInactive: '门店已关店或到期，不能再收款。',
+  codeInsufficientCredit: '顾客的储值不够这笔付款。',
+  codeInvalid: '付款码的签名验证不通过，不要收这笔款。',
+
+  openCashier: '收银台',
+  cashierTitle: '收银台',
+  cashierIntro:
+    '顾客出示付款码后，用钱包 App 的“扫一扫”扫码，收银台会在钱包里打开；也可以把付款链接粘贴到下面。收款从你的商家钱包发起，gas 由你支付。',
+  payLinkLabel: '付款链接',
+  payLinkHint: '可以粘贴，也可以用扫码枪直接扫入。',
+  payLinkInvalid: '这不是有效的付款码链接。',
+  openPayLink: '打开',
+  codeOtherChain: '这个付款码属于另一条链（#{chainId}），收银台运行在 {target}。',
+  chargeHeading: '付款码',
+  chargeCustomer: '顾客',
+  chargeStore: '门店',
+  chargeTimeLeft: '剩余时间',
+  codeChecking: '正在链上核对付款码…',
+  codeReady: '签名有效，可以收款。',
+  codeCreditLeft: '顾客还有 {credit} USDC 储值。',
+  connectToCharge: '连接这家店的商家钱包后即可收款。',
+  codeNotYourStore: '这个付款码属于 {merchant} 的门店。请在钱包里切换到那个账户再收款。',
+  chargeAction: '收款 {amount} USDC',
+  stepCharge: '收款',
+  chargeDone: '已收款 {amount} USDC',
+  nextCustomer: '下一位顾客',
 }
 
 export type MessageKey = keyof typeof zh
@@ -393,6 +449,9 @@ export const en: Record<MessageKey, string> = {
   txNothingToWithdraw: 'There are no earnings to withdraw yet.',
   txAlreadyClosed: 'The store is already closed.',
   txBonusPoolTooLow: "The bonus pool doesn't hold that much unallocated bonus.",
+  txInvalidSignature: 'The signature is invalid, or the pay code was already used.',
+  txSignatureExpired: 'The pay code has expired.',
+  txInsufficientCredit: 'Not enough credit.',
   txReverted: 'The transaction failed on chain.',
 
   formAmountInvalid: 'Enter a valid amount above 0.',
@@ -511,12 +570,70 @@ export const en: Record<MessageKey, string> = {
   posterTitle: 'Store QR code',
   posterHeading: 'Scan to top up',
   posterHint: 'Scan with your wallet app. Deposits stay locked in an on-chain contract.',
-  posterLocalhost:
+  localLinkNote:
     "This link points to this computer, which phones can't reach. For phone scanning, start a public URL with pnpm dev:phone.",
   copyLink: 'Copy link',
   downloadPoster: 'Download poster (PNG)',
   posterFailed:
     "This browser couldn't create the poster. A screenshot of the QR code above works too.",
+
+  payAtCounter: 'Pay at the counter',
+  payTitle: 'Pay at the counter',
+  payAmountLabel: 'Amount (USDC)',
+  payAvailable: '{credit} USDC available',
+  payExceedsCredit: 'That is more than your {credit} USDC of credit.',
+  paySignHint:
+    'Your wallet asks you to sign this payment. Signing costs no gas: it only lets this store charge this amount once, within {minutes} minutes.',
+  payWalletUnits:
+    "Your wallet shows the amount in USDC's smallest unit: {raw} means {amount} USDC.",
+  createPayCode: 'Create pay code',
+  stepSignPayment: 'Sign the payment',
+  payCodeHeading: 'Show this to the cashier',
+  payCodeWaiting: 'Waiting for the store to charge it…',
+  payCodeExpiresIn: 'Expires in {time}',
+  payCodeOnce:
+    'Only show it to the cashier. Until {time}, this store can charge it once, even if you close this window.',
+  changeAmount: 'Change amount',
+  payCodePaid: 'Paid {amount} USDC',
+  payCodeCharged: 'Paid',
+  chargeSplit: '{principal} principal + {bonus} bonus',
+  payCodeExpired: 'This code expired without being charged.',
+  newPayCode: 'New code',
+  payStoreNotActive:
+    'The store is closed or expired: credit can no longer be spent, but you can refund your principal.',
+  paySmartAccountUndeployed:
+    "Your smart account isn't deployed on this network yet, so the store's contract can't check its signature. Send any transaction from it first, then make the code again.",
+  paySignatureUnusable:
+    "The store's contract can't verify the signature your wallet returned, so the code would not work. Try another wallet or account.",
+  codeCharged: 'This code has already been charged.',
+  codeExpired: 'This code has expired. Ask the customer for a new one.',
+  codeStoreInactive: 'The store is closed or expired and can no longer charge credit.',
+  codeInsufficientCredit: "The customer's credit doesn't cover this payment.",
+  codeInvalid: "This code's signature doesn't check out. Don't accept it.",
+
+  openCashier: 'Cashier',
+  cashierTitle: 'Cashier',
+  cashierIntro:
+    "When a customer shows a pay code, scan it with your wallet app's scanner and the cashier opens in the wallet. You can also paste the payment link below. Charges are sent from your merchant wallet, which pays the gas.",
+  payLinkLabel: 'Payment link',
+  payLinkHint: 'Paste it, or scan it in with a barcode scanner.',
+  payLinkInvalid: "That isn't a valid pay code link.",
+  openPayLink: 'Open',
+  codeOtherChain: 'This code is for another chain (#{chainId}); this cashier runs on {target}.',
+  chargeHeading: 'Pay code',
+  chargeCustomer: 'Customer',
+  chargeStore: 'Store',
+  chargeTimeLeft: 'Time left',
+  codeChecking: 'Checking the code on chain…',
+  codeReady: 'Signature valid. Ready to charge.',
+  codeCreditLeft: 'The customer has {credit} USDC of credit left.',
+  connectToCharge: "Connect this store's merchant wallet to charge the code.",
+  codeNotYourStore:
+    'This code is for a store run by {merchant}. Switch to that account in your wallet to charge it.',
+  chargeAction: 'Charge {amount} USDC',
+  stepCharge: 'Charge',
+  chargeDone: 'Charged {amount} USDC',
+  nextCustomer: 'Next customer',
 }
 
 export const messages = { zh, en }

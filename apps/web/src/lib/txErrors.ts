@@ -33,20 +33,32 @@ const revertKeys: Partial<Record<string, MessageKey>> = {
   InvalidValidUntil: 'txInvalidValidUntil',
   NothingToWithdraw: 'txNothingToWithdraw',
   AlreadyClosed: 'txAlreadyClosed',
+  InvalidSignature: 'txInvalidSignature',
+  SignatureExpired: 'txSignatureExpired',
+  InsufficientCredit: 'txInsufficientCredit',
   ERC20InsufficientBalance: 'txInsufficientBalance',
   ERC20InsufficientAllowance: 'txInsufficientAllowance',
+}
+
+function findRevert(error: unknown): ContractFunctionRevertedError | undefined {
+  if (!(error instanceof BaseError)) return undefined
+  const revert = error.walk((cause) => cause instanceof ContractFunctionRevertedError)
+  return revert instanceof ContractFunctionRevertedError ? revert : undefined
+}
+
+/** The custom error a call or simulation reverted with, such as 'InvalidSignature'. */
+export function revertErrorName(error: unknown): string | undefined {
+  return findRevert(error)?.data?.errorName
 }
 
 /** Maps a failed transaction to a message: the contract's revert reason first, then the wallet. */
 export function txErrorKey(error: unknown): MessageKey {
   if (error instanceof PreflightError) return error.key
   if (error instanceof TransactionRevertedError) return 'txReverted'
-  if (error instanceof BaseError) {
-    const revert = error.walk((cause) => cause instanceof ContractFunctionRevertedError)
-    if (revert instanceof ContractFunctionRevertedError) {
-      const errorName = revert.data?.errorName
-      return (errorName && revertKeys[errorName]) || 'txReverted'
-    }
+  const revert = findRevert(error)
+  if (revert) {
+    const errorName = revert.data?.errorName
+    return (errorName && revertKeys[errorName]) || 'txReverted'
   }
   return walletErrorKey(error)
 }

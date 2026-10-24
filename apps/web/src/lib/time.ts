@@ -7,6 +7,19 @@ export function formatDate(seconds: bigint, lang: Lang): string {
   )
 }
 
+/** Formats a unix timestamp in seconds as a time of day in the UI language. */
+export function formatTime(seconds: bigint, lang: Lang): string {
+  return new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en', { timeStyle: 'short' }).format(
+    new Date(Number(seconds) * 1000),
+  )
+}
+
+/** Seconds left as m:ss, held at 0:00 once the time is up. */
+export function formatCountdown(seconds: number): string {
+  const left = Math.max(0, seconds)
+  return `${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}`
+}
+
 export function nowInSeconds(): bigint {
   return BigInt(Math.floor(Date.now() / 1000))
 }

@@ -7,9 +7,8 @@ import { CopyButton } from '../../components/CopyButton.tsx'
 import { Dialog } from '../../components/Dialog.tsx'
 import { useI18n } from '../../i18n/useI18n.ts'
 import { shortAddress } from '../../lib/format.ts'
+import { isServedLocally } from '../../lib/origin.ts'
 import { renderPoster } from './poster.ts'
-
-const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]'])
 
 /**
  * A QR code of the store's public page for the counter. It is a plain https link: a wallet app's
@@ -63,9 +62,9 @@ export function StorePosterDialog({ store, onClose }: { store: Address; onClose:
         </figcaption>
       </figure>
 
-      {LOOPBACK_HOSTS.has(window.location.hostname) && (
+      {isServedLocally() && (
         <p className="rounded-xl bg-amber-500/10 p-3 text-xs leading-relaxed text-amber-100">
-          {t('posterLocalhost')}
+          {t('localLinkNote')}
         </p>
       )}
 

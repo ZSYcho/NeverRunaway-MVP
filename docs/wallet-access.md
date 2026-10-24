@@ -9,7 +9,7 @@ works, and a short list of featured wallets gets extra polish.
 | Entry point                  | How users arrive                                                  | How the app connects                                                                                                                                                                    |
 | ---------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Wallet app browser (primary) | They open the app inside OKX, Bitget, TokenPocket, imToken, …     | The injected provider. One tap, no picker; a site the user approved before reconnects silently, since `eth_accounts` never prompts.                                                     |
-| Wallet app scanner           | They scan a link (for example a store poster) with the wallet app | The scanner opens the https link in the wallet's browser, which is the case above.                                                                                                      |
+| Wallet app scanner           | They scan a link (a store poster, or a customer's pay code)       | The scanner opens the https link in the wallet's browser, which is the case above.                                                                                                      |
 | Desktop extension            | Any browser extension                                             | [EIP-6963](https://eips.ethereum.org/EIPS/eip-6963) discovery: every compliant wallet appears with its own name and icon. `window.ethereum` is the fallback when none announces itself. |
 | Browser without a wallet     | Safari or Chrome on a phone, a desktop browser without extensions | "Open in wallet app" links on phones, and WalletConnect v2: a QR code on desktop, an app switch on mobile.                                                                              |
 
@@ -73,3 +73,4 @@ to appear.
   announces itself or sets `window.ethereum`.
 - WalletConnect needs Reown's relay and wallet registry, whose reachability varies by network,
   including in mainland China. The primary entry points don't depend on them.
+- Pay codes add their own checks, listed in [pay-codes.md](pay-codes.md#to-verify-on-devices).

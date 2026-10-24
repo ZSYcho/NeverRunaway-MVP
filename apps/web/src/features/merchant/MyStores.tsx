@@ -3,11 +3,13 @@ import { Link } from 'react-router'
 import type { Address } from 'viem'
 import { useReadContract, useReadContracts } from 'wagmi'
 import { deployment, targetChain } from '../../chain.ts'
+import { secondaryButton } from '../../components/buttons.ts'
 import { Notice } from '../../components/Notice.tsx'
 import { useUsdcDecimals } from '../../hooks/useUsdcDecimals.ts'
 import { useI18n } from '../../i18n/useI18n.ts'
 import { formatAmount } from '../../lib/amount.ts'
 import { shortAddress } from '../../lib/format.ts'
+import { CASHIER_PATH } from '../pay/codes.ts'
 import { StoreStatusBadge } from '../stores/StoreStatusBadge.tsx'
 
 /** The stores this wallet opened, newest first, as the factory indexes them by merchant. */
@@ -24,7 +26,14 @@ export function MyStores({ merchant }: { merchant: Address }) {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-xl font-semibold">{t('myStores')}</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-semibold">{t('myStores')}</h2>
+        {stores.data && stores.data.length > 0 && (
+          <Link to={CASHIER_PATH} className={secondaryButton}>
+            {t('openCashier')}
+          </Link>
+        )}
+      </div>
       {stores.isPending ? (
         <Notice>{t('loadingStores')}</Notice>
       ) : stores.isError ? (

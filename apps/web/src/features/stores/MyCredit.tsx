@@ -1,6 +1,8 @@
+import { lazy, Suspense, useState } from 'react'
 import type { Address } from 'viem'
-import { useConfig } from 'wagmi'
+import { useConfig, useConnection } from 'wagmi'
 import { targetChain } from '../../chain.ts'
+import { primaryButton } from '../../components/buttons.ts'
 import { TxSteps } from '../../components/TxSteps.tsx'
 import { useTxFlow } from '../../hooks/useTxFlow.ts'
 import { useI18n } from '../../i18n/useI18n.ts'
@@ -11,6 +13,11 @@ import { refund } from '../../tx/refund.ts'
 import { FaucetButton } from '../faucet/FaucetButton.tsx'
 import { describeRefund } from './tiers.ts'
 import type { StoreState, UserState } from './useStore.ts'
+
+// The pay dialog brings the QR renderer, which a visit to a store page rarely needs.
+const PayDialog = lazy(() =>
+  import('../pay/PayDialog.tsx').then((module) => ({ default: module.PayDialog })),
+)
 
 export function MyCredit({
   store,
@@ -25,7 +32,9 @@ export function MyCredit({
 }) {
   const { t, lang } = useI18n()
   const config = useConfig()
+  const { chainId } = useConnection()
   const flow = useTxFlow<'refund'>()
+  const [paying, setPaying] = useState(false)
 
   const amount = (value: bigint) => formatAmount(value, decimals)
   const credit = user.principal + user.bonus
@@ -63,6 +72,18 @@ export function MyCredit({
             {t('principal')} {amount(user.principal)} · {t('bonusPart')} {amount(user.bonus)}
           </p>
         </div>
+      )}
+
+      {state.isActive && credit > 0n && (
+        <button
+          type="button"
+          onClick={() => setPaying(true)}
+          // Wallets refuse to sign typed data for a chain other than the one they are on.
+          disabled={chainId !== targetChain.id}
+          className={`w-full ${primaryButton}`}
+        >
+          {t('payAtCounter')}
+        </button>
       )}
 
       {refundView.state === 'locked' && (
@@ -107,6 +128,17 @@ export function MyCredit({
         <p className="text-slate-300">{t('walletUsdc', { amount: amount(user.walletUsdc) })}</p>
         <FaucetButton account={user.account} />
       </div>
+
+      {paying && (
+        <Suspense fallback={null}>
+          <PayDialog
+            store={store}
+            user={user}
+            decimals={decimals}
+            onClose={() => setPaying(false)}
+          />
+        </Suspense>
+      )}
     </section>
   )
 }

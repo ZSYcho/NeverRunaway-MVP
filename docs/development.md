@@ -58,6 +58,13 @@ bonus tier can take, and plans the funding for a promotion. Each store's managem
 a QR code of its public page for the counter. A phone can only open it from a public URL, such as
 the one `pnpm dev:phone` prints.
 
+To spend credit, press **Pay at the counter** on a store page where you hold some, enter an amount
+and sign: the dialog shows a pay code. The store's merchant charges it on the **Cashier** page
+(linked from **Merchant**), either by scanning the QR code with their wallet app or by pasting the
+code's link. On one computer, copy the link into a browser profile whose wallet is the store's
+merchant; the customer's dialog shows the payment as soon as it is charged. How pay codes work is
+described in [pay-codes.md](pay-codes.md).
+
 `pnpm dev` starts a new chain each time. If MetaMask then reports a nonce error, clear its record
 of the old chain: Settings → Advanced → Clear activity tab data.
 
